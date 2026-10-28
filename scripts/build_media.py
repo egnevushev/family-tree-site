@@ -88,9 +88,10 @@ def main():
             view['mid'] = mid.name
             wanted.update((view['file'], mid.name))
         index[sid] = dict(views=views)
+    # The videos about the site are made by scripts/promo/make.sh, not from the sources: they stay.
     keep = {'index.json'}
     for stale in OUT.iterdir():
-        if stale.name not in wanted and stale.name not in keep:
+        if stale.name not in wanted and stale.name not in keep and not stale.name.startswith('intro-'):
             stale.unlink()
     (OUT / 'index.json').write_text(json.dumps(index, ensure_ascii=False, indent=1) + '\n')
     size = sum((OUT / f).stat().st_size for f in wanted)

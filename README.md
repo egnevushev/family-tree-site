@@ -15,6 +15,7 @@ What it does:
 - **map of places**, **all documents** by place and by year, **«On this day»**;
 - **book of stories** and printing the tree on A3;
 - **«What's new»** and **«Help fill in»** — questions to the family;
+- **a short video** about the site, shown at the first visit and under «?», in each language;
 - **two languages**, English and Russian, with a switch in the header: the interface and, where they are translated, the data.
 
 `data/` now holds a **demo family**: the Sokolovs, Belovs and Vershinins, written in English and Russian. All people, documents and archive references are invented, and the «scans» are drawn by a script. Replace it with your own data.
@@ -185,12 +186,15 @@ A line is drawn by its weakest parent. Only a document raises a status. Matching
   "recipient": "the keeper of the tree",
   "contact": "Write to: **mail@example.com**",
   "inbox_url": "",
+  "intro_video": {"en": "../site-media/intro-en.mp4", "ru": "../site-media/intro-ru.mp4"},
+  "intro_poster": {"en": "../site-media/intro-en.jpg", "ru": "../site-media/intro-ru.jpg"},
   "source_url": "https://github.com/egnevushev/family-tree-site"
 }
 ```
 
 - `branches` — the branches of the family. Usually one per grandparent of the root person; `head` is the id of that person. A branch holds their ancestors, the ancestors' descendants and those who married in. Colours follow the order, up to six branches.
 - `contact` — text shown instead of the message form. There is no form until `inbox_url` is set: no server for messages is included. The protocol is described at `bindForm` in `app/app.js`: `POST <inbox_url>file` for each file, then `POST <inbox_url>send` with JSON; the answer is `{ok, id}` or `{error}`.
+- `intro_video` and `intro_poster` — the video about the site and its still, paths from `app/`, one per language. A new reader sees it once; later it is under «?». Leave them out and there is no video.
 - `source_url` — a link to the code of the site at the foot of «?». Point it at your own repository or leave it out.
 
 ## Stories, «What's new», questions
@@ -242,6 +246,18 @@ python3 scripts/site_map_base.py <folder with the .geojson files>
 ```
 
 - The frame of the base is Eastern Europe for now (`BOX` in the same script).
+
+## The video
+
+`scripts/promo/` makes the video: a headless Chrome walks through the site with a drawn pointer and captions, `music.py` writes a quiet tune with no licence to worry about, ffmpeg joins them. You need Node with Playwright (`npm i playwright`, or `PLAYWRIGHT_PATH` to a copy) and Chrome, and ffmpeg.
+
+```sh
+python3 scripts/serve.py &
+sh scripts/promo/make.sh en       # site-media/intro-en.mp4 and intro-en.jpg
+sh scripts/promo/make.sh ru
+```
+
+The scenes in `scripts/promo/record.cjs` walk through the demo family; for your own, change the people, the line and the search words there. `MUSIC=<file>` puts your own music under it.
 
 ## Where it comes from
 

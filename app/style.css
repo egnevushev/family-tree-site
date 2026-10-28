@@ -70,6 +70,17 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 /* The plate always says the first name only; the full name is in its tooltip */
 .me-pill .long{display:none}
 .me-pill .short{display:inline}
+/* The video about the site: once for every new reader, again from «?» */
+.intro{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(37,55,47,.38)}
+.intro[hidden]{display:none}
+.intro-box{position:relative;width:min(820px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px 14px;box-shadow:0 18px 48px rgba(37,55,47,.25)}
+.intro h2{font-size:22px;margin:0 36px 4px 0}
+.intro p{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.intro video{display:block;width:100%;aspect-ratio:16/9;border-radius:10px;background:var(--soft)}
+.intro-close{position:absolute;top:10px;right:10px;border:0;background:none;font-size:22px;line-height:1;padding:4px 8px}
+.intro-foot{display:flex;justify-content:flex-end;margin-top:12px}
+.intro-open{display:inline-flex;align-items:center;gap:8px;margin:2px 0 4px;font-size:13px;color:var(--forest)}
+.intro-open[hidden]{display:none}
 .me-ask{position:fixed;top:calc(var(--bar) + 8px);left:16px;z-index:30;max-width:calc(100% - 32px);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 12px 32px rgba(37,55,47,.18);font-size:14px}
 .me-ask[hidden]{display:none}
 .me-ask p{margin:0 0 12px}
@@ -599,7 +610,7 @@ body.page-open .hint,body.page-open .zoom,body.page-open .focusbar{display:none}
 /* Print: the tree on A3 without the header, the card and the buttons, its lines thin; or the booklet on A4 */
 @media print{
   html,body{height:auto;overflow:visible;background:#fff}
-  .bar,#panel,.panel-resize,.zoom,.hint,#legend,.focusbar,#viewer,.me-ask,.modes,.today-line,.page-head,.docs-jump{display:none!important}
+  .bar,#panel,.panel-resize,.zoom,.hint,#legend,.focusbar,#viewer,.me-ask,.intro,.modes,.today-line,.page-head,.docs-jump{display:none!important}
   body.printing-tree .page{display:none!important}
   body.printing-tree #stage{position:static;inset:auto;display:flex;flex-direction:column}
   body.printing-tree .print-head{order:-1}

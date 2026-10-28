@@ -38,6 +38,9 @@ const STATIC_EN = {
   'Семейное древо. Перетаскивайте для перемещения, колесо или щипок — масштаб. Нажмите на человека или линию.': 'Family tree. Drag to move, wheel or pinch to zoom. Click a person or a line.',
   'Масштаб': 'Zoom', 'Приблизить': 'Zoom in', 'Отдалить': 'Zoom out', 'Вписать всё древо в экран': 'Fit the whole tree on the screen',
   'Вписать древо в экран': 'Fit the tree on the screen', 'Напечатать схему на лист A3': 'Print the tree on an A3 sheet', 'Напечатать схему': 'Print the tree',
+  'Скрыть видео': 'Hide the video', 'Как пользоваться сайтом': 'How to use the site',
+  'Видео на полторы минуты. Потом его всегда можно найти под «?» вверху справа.': 'A video of a minute and a half. You can always find it again under «?» at the top right.',
+  'Видео: как пользоваться сайтом': 'Video: how to use the site',
   'Закрыть': 'Close', 'Насколько надёжна связь': 'How reliable a link is',
   'Фокус:': 'Focus:', 'и его предки': 'and their ancestors', 'Всё древо': 'Whole tree', 'Карта мест': 'Map of places', '← Вся карта': '← Whole map',
   'Закрыть карту, вернуться к древу': 'Close the map, back to the tree', 'К древу ×': 'To the tree ×',
@@ -2921,6 +2924,7 @@ $('viewer-prev').onclick = () => showPage(viewerState.i - 1);
 $('viewer-next').onclick = () => showPage(viewerState.i + 1);
 document.addEventListener('keydown', e => {
   // Escape closes the question «Забыть…?»; in the form it only leaves the field, so nothing typed is lost.
+  if (e.key === 'Escape' && !$('intro').hidden) { showIntro(false); return; }
   if (e.key === 'Escape' && !$('me-ask').hidden) { $('me-ask').hidden = true; $('me-forget')?.focus(); return; }
   if (e.key === 'Escape' && e.target.closest?.('form.send')) { e.target.blur(); return; }
   // Escape closes the document first, then the legend, then the card.
@@ -3002,6 +3006,28 @@ renderTree(); syncGroups();
 $('focus-exit').onclick = () => exitFocus();
 $('news-toggle').onclick = () => go({news: 1});
 markNews(false);
+// A video about the site (intro_video and intro_poster in data/site.json, paths from app/, one per language as
+// {"en": …, "ru": …}): shown to every reader until they play it or hide it, then only from «?». Without a video
+// there is neither.
+const INTRO_KEY = 'familyIntroSeen', INTRO_VIDEO = loc(SITE.intro_video) || '', INTRO_POSTER = loc(SITE.intro_poster) || '';
+const introSeen = () => { try { localStorage.setItem(INTRO_KEY, '1'); } catch (_) {} };
+let introBack = null;
+function showIntro(open) {
+  const video = $('intro-video');
+  if (open) {
+    // Nothing is loaded before the dialog opens (phones on mobile data); preload="none" waits for «play».
+    if (!video.getAttribute('src')) { video.poster = INTRO_POSTER; video.src = INTRO_VIDEO; }
+    introBack = document.activeElement; $('intro').hidden = false; $('intro-close').focus();
+  } else {
+    video.pause(); $('intro').hidden = true; introSeen();
+    introBack?.focus?.(); introBack = null;
+  }
+}
+$('intro-video').addEventListener('play', introSeen);
+$('intro-close').onclick = $('intro-hide').onclick = () => showIntro(false);
+$('intro').addEventListener('click', e => { if (e.target === $('intro')) showIntro(false); });
+$('intro-open').onclick = () => { showLegend(false); showIntro(true); };
+$('intro-open').hidden = !INTRO_VIDEO;
 {
   const other = LANGS.find(l => l !== LANG), b = $('lang-toggle');
   b.hidden = !other;
@@ -3011,6 +3037,7 @@ markNews(false);
     b.onclick = () => { try { localStorage.setItem('familyLang', other); } catch (_) {} location.reload(); };
   }
 }
+try { if (INTRO_VIDEO && !localStorage.getItem(INTRO_KEY)) showIntro(true); } catch (_) {}
 history.replaceState(startRoute, '', location.hash || '#');
 if (startFocus && shown.has(startFocus)) focusOn(startFocus);
 if (startRoute.p || startRoute.l || startRoute.f || startRoute.path || startRoute.help || startRoute.send || startRoute.page || startRoute.pl) { render(startRoute, false); } else centerOn(home(), 1);
