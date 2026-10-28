@@ -54,5 +54,15 @@ missing = [s['id'] for s in site['sources'] if sources[s['id']].get('local_path'
 if missing:
     print(f'Warning: {len(missing)} sources have no copy for the site ({", ".join(missing[:8])}); run scripts/build_media.py')
 (ROOT / 'app/data.js').write_text('window.FAMILY_DATA = ' + json.dumps(site, ensure_ascii=False).replace('</', '<\\/') + ';\n')
+# Every file the page loads carries a mark of its content (?v=…), so a browser never takes a cached old script
+# with a new page after an update (GitHub Pages lets browsers keep files for ten minutes).
+import hashlib
+import re
+index = ROOT / 'app/index.html'
+html = index.read_text()
+for name in ('style.css', 'vendor/dagre.min.js', 'data.js', 'app.js'):
+    mark = hashlib.sha256((ROOT / 'app' / name).read_bytes()).hexdigest()[:10]
+    html = re.sub(r'((?:src|href)="' + re.escape(name) + r')(\?v=[0-9a-f]*)?"', lambda m: f'{m[1]}?v={mark}"', html)
+index.write_text(html)
 print(f"app/data.js: {len(people)} people, {len(data['claims'])} facts, {len(data['relationships'])} links, "
       f"{len(site['sources'])} cited sources, {len(site['stories'])} stories")

@@ -1,6 +1,6 @@
 #!/bin/sh
-# The site video in one language: records the scenes (record.cjs), makes the music (music.py, or MUSIC=<file>),
-# joins it all with ffmpeg.
+# The site video in one language: records the scenes (record.cjs), takes the music (music.m4a, or MUSIC=<file>,
+# else a tune made by music.py), joins it all with ffmpeg.
 #   python3 scripts/serve.py &
 #   sh scripts/promo/make.sh en        (and ru; NORECORD=1 reuses the frames)
 # The output is site-media/intro-<lang>.mp4 with its poster intro-<lang>.jpg; data/site.json "intro_video" and
@@ -14,6 +14,7 @@ FRAMES=$WORK/frames-$LANG_SITE
 OUT=site-media/intro-$LANG_SITE.mp4
 SCENES="title card line branches map docs book days help me end"
 FADE=0.5
+MUSIC=${MUSIC:-scripts/promo/music.m4a}
 mkdir -p "$WORK/clips-$LANG_SITE" site-media
 [ -n "$NORECORD" ] || LANG_SITE=$LANG_SITE node scripts/promo/record.cjs "$FRAMES"
 
@@ -39,8 +40,8 @@ total=$(echo "$offset + $prevlen" | bc -l)
 echo "video: $(printf %.1f "$total") s"
 
 fadeout=$(echo "$total - 3" | bc -l)
-# The music: a file of your own (MUSIC=…), else a quiet tune made by music.py, with no licence to worry about.
-if [ -n "$MUSIC" ]; then
+# The music: music.m4a (or MUSIC=…), its beginning faded out at the end card; without it, a quiet tune made by music.py.
+if [ -f "$MUSIC" ]; then
   audio="$MUSIC" ; afilter="afade=t=in:d=0.5"
 else
   audio="$WORK/music.wav" ; afilter="aecho=0.8:0.7:420|780:0.25|0.15,lowpass=f=6000,afade=t=in:d=1.5"

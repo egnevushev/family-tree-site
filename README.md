@@ -249,7 +249,7 @@ python3 scripts/site_map_base.py <folder with the .geojson files>
 
 ## The video
 
-`scripts/promo/` makes the video: a headless Chrome walks through the site with a drawn pointer and captions, `music.py` writes a quiet tune with no licence to worry about, ffmpeg joins them. You need Node with Playwright (`npm i playwright`, or `PLAYWRIGHT_PATH` to a copy) and Chrome, and ffmpeg.
+`scripts/promo/` makes the video: a headless Chrome walks through the site with a drawn pointer and captions, and ffmpeg joins the frames with the music. You need Node with Playwright (`npm i playwright`, or `PLAYWRIGHT_PATH` to a copy) and Chrome, and ffmpeg.
 
 ```sh
 python3 scripts/serve.py &
@@ -257,7 +257,7 @@ sh scripts/promo/make.sh en       # site-media/intro-en.mp4 and intro-en.jpg
 sh scripts/promo/make.sh ru
 ```
 
-The scenes in `scripts/promo/record.cjs` walk through the demo family; for your own, change the people, the line and the search words there. `MUSIC=<file>` puts your own music under it.
+The scenes in `scripts/promo/record.cjs` walk through the demo family; for your own, change the people, the line and the search words there. The music is `scripts/promo/music.m4a`; `MUSIC=<file>` puts another under it, and without the file `music.py` writes a quiet tune.
 
 ## Where it comes from
 
