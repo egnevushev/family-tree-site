@@ -743,3 +743,12 @@ body.panel-open .today-line{display:none}
 .lang-toggle{font-size:12px;font-weight:600;letter-spacing:.04em;min-width:36px}
 .legend-source{margin:14px 0 0;font-size:13px}
 .legend-source a{color:var(--muted,inherit)}
+/* The link to the source code: a round button in the bottom right corner of the tree, like the zoom buttons.
+   On a wide screen «On this day» stands left of it; with a card open it moves along with the card's edge. */
+.gh-float{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:5;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:50%;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(37,55,47,.1);text-decoration:none}
+.gh-float:hover{background:var(--soft);color:var(--forest)}
+body.page-open .gh-float{display:none}
+@media (min-width:1180px){#stage:has(.gh-float) .today-line{right:68px}}
+@media (min-width:761px){body.panel-open .gh-float{right:calc(var(--panel-w) + 16px)}}
+@media (max-width:760px){body.panel-open .gh-float{display:none}#stage:has(.gh-float) .hint{right:66px}}
+@media print{.gh-float{display:none!important}}
