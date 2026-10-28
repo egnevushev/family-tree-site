@@ -1,5 +1,7 @@
 # Family tree — a site for your own archive
 
+**Live demo: https://egnevushev.github.io/family-tree-site/app/**
+
 A static site for genealogical research. Every link and every fact cites a document, and reliability is shown by the kind of source: a document of the time, a publication, the family's word, someone else's tree. The site never invents confidence percentages.
 
 What it does:
@@ -27,7 +29,7 @@ python3 scripts/build.py         # checks the data → app/data.js
 python3 scripts/serve.py         # http://127.0.0.1:8765/app/
 ```
 
-`build.py` stops with a clear message when a reference leads nowhere, a fact has no source, a forbidden word got into a story, and so on. The site is plain files: put the whole folder on any static hosting (GitHub Pages, Netlify, your own nginx) and open `/app/`.
+`build.py` stops with a clear message when a reference leads nowhere, a fact has no source, a forbidden word got into a story, and so on. The site is plain files: put the whole folder on any static hosting (GitHub Pages, Netlify, your own nginx) and open `/app/`. On GitHub Pages: Settings → Pages → Deploy from a branch, `main`, `/ (root)`; the `index.html` at the root leads to `app/`.
 
 ## Your own family instead of the demo
 
@@ -183,15 +185,12 @@ A line is drawn by its weakest parent. Only a document raises a status. Matching
   "recipient": "the keeper of the tree",
   "contact": "Write to: **mail@example.com**",
   "inbox_url": "",
-  "intro_video": "",
-  "intro_poster": "",
   "source_url": "https://github.com/egnevushev/family-tree-site"
 }
 ```
 
 - `branches` — the branches of the family. Usually one per grandparent of the root person; `head` is the id of that person. A branch holds their ancestors, the ancestors' descendants and those who married in. Colours follow the order, up to six branches.
 - `contact` — text shown instead of the message form. There is no form until `inbox_url` is set: no server for messages is included. The protocol is described at `bindForm` in `app/app.js`: `POST <inbox_url>file` for each file, then `POST <inbox_url>send` with JSON; the answer is `{ok, id}` or `{error}`.
-- `intro_video` and `intro_poster` — paths from `app/`, for example `../site-media/video.mp4`. When empty, there is no video button.
 - `source_url` — a link to the code of the site at the foot of «?». Point it at your own repository or leave it out.
 
 ## Stories, «What's new», questions

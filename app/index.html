@@ -30,15 +30,6 @@
   <button class="legend-toggle about-toggle" id="legend-toggle" aria-expanded="false" aria-controls="legend" aria-label="Что здесь есть и как читать линии" title="Что здесь есть и как читать линии">?</button>
   <button class="legend-toggle lang-toggle" id="lang-toggle" hidden></button>
 </header>
-<div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" hidden>
-  <div class="intro-box">
-    <button class="intro-close" id="intro-close" aria-label="Скрыть видео">×</button>
-    <h2 id="intro-title">Как пользоваться сайтом</h2>
-    <p>Видео на полторы минуты. Потом его всегда можно найти под «?» вверху справа.</p>
-    <video id="intro-video" controls playsinline preload="none"></video>
-    <div class="intro-foot"><button id="intro-hide">Скрыть</button></div>
-  </div>
-</div>
 <div class="me-ask" id="me-ask" role="alertdialog" aria-labelledby="me-ask-text" hidden><p id="me-ask-text"></p><div><button id="me-no">Нет</button><button id="me-yes">Да</button></div></div>
 <main id="stage">
   <svg id="tree" role="application" aria-label="Семейное древо. Перетаскивайте для перемещения, колесо или щипок — масштаб. Нажмите на человека или линию.">
@@ -52,7 +43,6 @@
     <button class="legend-close" id="legend-close" aria-label="Закрыть">×</button>
     <h2 id="about-title">Семейное древо</h2>
     <p class="about-lead" id="about-lead"></p>
-    <button class="intro-open" id="intro-open"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6 4.5v11l9-5.5z"/></svg>Видео: как пользоваться сайтом</button>
     <ul class="about-list" id="about-list"></ul>
     <h3>Насколько надёжна связь</h3>
     <div id="legend-rows"></div>
