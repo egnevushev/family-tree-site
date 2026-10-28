@@ -1,0 +1,157 @@
+{
+ "places": [
+  {
+   "id": "kesova-gora",
+   "name": {
+    "ru": "Кесова Гора",
+    "en": "Kesova Gora"
+   },
+   "kind": "village",
+   "lat": 57.583,
+   "lon": 37.25,
+   "source": {
+    "title": {
+     "ru": "Кесова Гора — Википедия",
+     "en": "Kesova Gora — Wikipedia"
+    },
+    "url": "https://ru.wikipedia.org/wiki/Кесова_Гора"
+   },
+   "historic": {
+    "ru": "Кашинский уезд Тверской губернии",
+    "en": "Kashin uyezd, Tver governorate"
+   },
+   "today": {
+    "ru": "Тверская область",
+    "en": "Tver Oblast"
+   },
+   "forms": [
+    "Кесова Гора",
+    "Кесовой Горы",
+    "Пески",
+    "Kesova Gora",
+    "Peski"
+   ],
+   "claims": [
+    "C020",
+    "C030",
+    "C032",
+    "C040"
+   ]
+  },
+  {
+   "id": "kashin",
+   "name": {
+    "ru": "Кашин",
+    "en": "Kashin"
+   },
+   "kind": "city",
+   "lat": 57.36,
+   "lon": 37.611,
+   "source": {
+    "title": {
+     "ru": "Кашин — Википедия",
+     "en": "Kashin — Wikipedia"
+    },
+    "url": "https://ru.wikipedia.org/wiki/Кашин"
+   },
+   "historic": {
+    "ru": "Тверская губерния",
+    "en": "Tver governorate"
+   },
+   "today": {
+    "ru": "Тверская область",
+    "en": "Tver Oblast"
+   },
+   "forms": [
+    "Кашин",
+    "Кашинск",
+    "Kashin"
+   ],
+   "claims": [
+    "C007",
+    "C022"
+   ]
+  },
+  {
+   "id": "tver",
+   "name": {
+    "ru": "Тверь (Калинин)",
+    "en": "Tver (Kalinin)"
+   },
+   "kind": "city",
+   "lat": 56.858,
+   "lon": 35.901,
+   "source": {
+    "title": {
+     "ru": "Тверь — Википедия",
+     "en": "Tver — Wikipedia"
+    },
+    "url": "https://ru.wikipedia.org/wiki/Тверь"
+   },
+   "forms": [
+    "Калинин",
+    "Твери",
+    "Тверь",
+    "Kalinin",
+    "Tver"
+   ],
+   "claims": [
+    "C009",
+    "C010",
+    "C011"
+   ]
+  },
+  {
+   "id": "uglich",
+   "name": {
+    "ru": "Углич",
+    "en": "Uglich"
+   },
+   "kind": "city",
+   "lat": 57.527,
+   "lon": 38.33,
+   "source": {
+    "title": {
+     "ru": "Углич — Википедия",
+     "en": "Uglich — Wikipedia"
+    },
+    "url": "https://ru.wikipedia.org/wiki/Углич"
+   },
+   "historic": {
+    "ru": "Ярославская губерния",
+    "en": "Yaroslavl governorate"
+   },
+   "today": {
+    "ru": "Ярославская область",
+    "en": "Yaroslavl Oblast"
+   },
+   "forms": [
+    "Углич",
+    "Угличе",
+    "Углича",
+    "Uglich"
+   ],
+   "claims": [
+    "C016",
+    "C027",
+    "C034",
+    "C035"
+   ]
+  },
+  {
+   "id": "volkhov-front",
+   "name": {
+    "ru": "Волховский фронт",
+    "en": "Volkhov Front"
+   },
+   "kind": "far",
+   "forms": [
+    "Волховском фронте",
+    "Volkhov Front"
+   ],
+   "claims": [
+    "C021"
+   ]
+  }
+ ]
+}

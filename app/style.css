@@ -1,0 +1,745 @@
+:root{
+  --paper:#f5f2e9;--panel:#fffdf7;--ink:#25372f;--muted:#6b736a;--line:#d6d9cf;--soft:#e8eee5;
+  --forest:#2f5d47;--sage:#5f8f74;--clay:#8a7a62;--amber:#b0742e;--grey:#a3a39a;--alert:#a1452f;
+  --bar:56px;--panel-w:440px;
+  /* Branch colours: pale areas behind the cards, deep tones for names and dots. Kept apart from the
+     reliability colours (forest, sage, clay, amber, grey), which belong to lines only. */
+  --g-1:#e3e9f1;--g-1-ink:#3d5b78;
+  --g-2:#f3e3e0;--g-2-ink:#8e4c45;
+  --g-3:#e9e4f3;--g-3-ink:#5b4f8c;
+  --g-4:#dfebe7;--g-4-ink:#2e655c;
+  --g-5:#f3ecda;--g-5-ink:#7a5c22;
+  --g-6:#e2edf0;--g-6-ink:#2f6170;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;-webkit-tap-highlight-color:transparent;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);overflow:hidden;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 12px}
+button:hover{background:var(--soft)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+a{color:var(--forest)}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
+
+/* Top bar */
+.bar{position:fixed;inset:0 0 auto 0;height:var(--bar);display:flex;align-items:center;gap:14px;padding:0 16px;padding-top:env(safe-area-inset-top);background:rgba(245,242,233,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:20}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-size:16px;white-space:nowrap}
+.brand small{display:block;font-size:9.5px;letter-spacing:2px;color:var(--muted)}
+.monogram{display:block;width:38px;height:38px;flex:none}
+.search{position:relative;flex:1;max-width:420px;margin-left:auto}
+.search input{width:100%;border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:var(--panel);font-size:14px}
+#results{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:60vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(37,55,47,.14);padding:6px}
+#results button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px}
+#results button:hover,#results button[aria-selected=true]{background:var(--soft)}
+#results small{display:block;color:var(--muted);font-size:12px}
+#results .empty{padding:10px;color:var(--muted);font-size:13px}
+.news-toggle{position:relative}
+.news-toggle .short{display:none}
+.news-toggle.unread::after{content:"";position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 2px var(--panel)}
+.news h3{margin:22px 0 8px}
+.news ul{margin:0 0 10px;padding-left:18px}
+.news li{margin:0 0 8px}
+/* «Что нового»: an entry already seen shows its first line; «Подробнее» opens it. */
+.news .lead{font-family:var(--serif);font-size:16px;margin:0 0 10px}
+.news:not(.open) .news-more{display:none}
+.news-open,.news-older{font-size:13px;color:var(--forest);border-color:var(--line);padding:4px 12px}
+.news-older{display:block;margin:22px 0 0}
+.legend-toggle{font-size:13px;white-space:nowrap}
+.help-toggle .short{display:none}
+
+/* Branch switcher: «Все» and one chip per side of the family */
+.groups{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel);flex:none}
+.groups button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:999px;padding:5px 12px;font-size:13px;line-height:1.3;background:none;white-space:nowrap}
+.groups button:hover{background:var(--soft)}
+.groups button i{width:8px;height:8px;border-radius:50%;flex:none}
+.groups button.active{background:var(--forest);color:#fff}
+.groups button.active i{box-shadow:0 0 0 1.5px #fff}
+.groups button.opened{box-shadow:inset 0 0 0 1.5px var(--forest)}
+.groups button.folded{color:var(--muted)}
+.groups button.folded i{opacity:.4}
+/* «Это я»: the reader's own plate, first in the row of branches; warm and outlined, unlike a branch chip.
+   The name opens their card, × asks «Забыть, что вы — …?» */
+.me-pill{display:inline-flex;align-items:center;flex:none;border-radius:999px;background:#fbefdc;box-shadow:inset 0 0 0 1.5px var(--amber);margin-right:6px}
+.groups .me-pill button,.groups .me-pill button:hover{border:0;background:none;color:#6b4415}
+.groups .me-pill .me-name{padding:5px 3px 5px 12px;font-weight:600}
+.groups .me-pill .me-name i{background:var(--amber)}
+.groups .me-pill .me-x{padding:3px 11px 5px 7px;font-size:16px;line-height:1;font-weight:400}
+.groups .me-pill button:hover{text-decoration:underline}
+/* The plate always says the first name only; the full name is in its tooltip */
+.me-pill .long{display:none}
+.me-pill .short{display:inline}
+.me-ask{position:fixed;top:calc(var(--bar) + 8px);left:16px;z-index:30;max-width:calc(100% - 32px);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 12px 32px rgba(37,55,47,.18);font-size:14px}
+.me-ask[hidden]{display:none}
+/* The video about the site: once for every new reader, again from «?» */
+.intro{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(37,55,47,.38)}
+.intro[hidden]{display:none}
+.intro-box{position:relative;width:min(820px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px 14px;box-shadow:0 18px 48px rgba(37,55,47,.25)}
+.intro h2{font-size:22px;margin:0 36px 4px 0}
+.intro p{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.intro video{display:block;width:100%;aspect-ratio:16/9;border-radius:10px;background:var(--soft)}
+.intro-close{position:absolute;top:10px;right:10px;border:0;background:none;font-size:22px;line-height:1;padding:4px 8px}
+.intro-foot{display:flex;justify-content:flex-end;margin-top:12px}
+.intro-open{display:inline-flex;align-items:center;gap:8px;margin:2px 0 4px;font-size:13px;color:var(--forest)}
+.me-ask p{margin:0 0 12px}
+.me-ask div{display:flex;gap:8px;justify-content:flex-end}
+.me-ask button{min-width:64px}
+.me-ask #me-yes{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* Tree stage */
+#stage{position:fixed;inset:var(--bar) 0 0 0}
+#group-areas,#group-names{pointer-events:none}
+#group-names .group-title{font-family:var(--serif);font-size:22px}
+#group-names .group-fold{pointer-events:auto;cursor:pointer}
+#group-names .group-fold rect{fill:var(--panel);stroke:var(--pill);stroke-width:1.4}
+#group-names .group-fold path{fill:none;stroke:var(--pill);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#group-names .group-fold:hover rect,#group-names .group-fold:focus rect{fill:var(--soft);stroke-width:2}
+#group-names .group-fold:focus{outline:none}
+#tree{width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:radial-gradient(var(--line) .8px,transparent .8px) 0 0/22px 22px}
+#tree.dragging{cursor:grabbing}
+.hypothesis-label{font-family:var(--sans);font-size:12px;fill:var(--amber);paint-order:stroke;stroke:var(--paper, #f5f2e9);stroke-width:5px;stroke-linejoin:round;pointer-events:none}
+/* The card slides in over the canvas, which keeps its full width: nothing bare opens beside the sliding card.
+   The tree is placed in the part the card leaves free (stageBox in app.js); so are the focus bar and the legend. */
+@media (min-width:761px){
+  body.panel-open .focusbar{left:calc(50% - var(--panel-w) / 2)}
+  body.panel-open .legend{right:calc(var(--panel-w) + 16px)}
+}
+
+.node rect{fill:var(--panel);stroke:var(--line);stroke-width:1.2}
+.node text{font-family:var(--sans);fill:var(--ink);pointer-events:none}
+.node .name{font-size:13px;font-weight:600}
+.node .maiden{font-weight:500;fill:var(--muted)}
+.node .given{font-weight:500}
+.node .years{font-size:12px;fill:var(--muted)}
+.node{cursor:pointer}
+.node:hover rect.card,.node:focus rect.card{stroke:var(--forest)}
+.node:focus{outline:none}
+.node.root rect.card{stroke:var(--forest);stroke-width:2}
+.node.selected rect.card{fill:#eef4ec;stroke:var(--forest);stroke-width:2.4}
+.node.match rect.card{stroke:var(--amber);stroke-width:2.4}
+.node.dim{opacity:.35}
+.node.off-path{opacity:.28}
+.edge.off-path{opacity:.15}
+.edge.on-path{stroke-width:calc(4.5px * var(--lw, 1))!important}
+.node.on-path rect.card{stroke:var(--forest);stroke-width:2}
+
+.node.saint rect.card{fill:#fbf4e0;stroke:#b8913a;stroke-width:1.8}
+.node.saint.selected rect.card{fill:#f6ecd0;stroke:#9a7426;stroke-width:2.6}
+.cross circle{fill:#fbf4e0;stroke:#b8913a;stroke-width:1.8}
+.cross path,.saint-plate path,.legend-cross path{fill:none;stroke:#a8822f;stroke-width:1.8;stroke-linecap:round}
+.saint-plate{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#fbf4e0;border:1px solid #e4cf98;font-size:13.5px;color:#5b4515}
+.saint-plate svg{flex:none;width:14px;height:22px}
+.edge{fill:none;/* --lw thins lines when the tree is zoomed out (set in app.js) */stroke-linecap:round;pointer-events:none;vector-effect:non-scaling-stroke}
+.hit{fill:none;stroke:transparent;stroke-width:16;vector-effect:non-scaling-stroke;cursor:pointer;pointer-events:stroke}
+.hit:hover+.edge,.edge.selected{stroke-width:4.5!important}
+.lvlp{stroke:var(--forest);stroke-width:calc(2.6px * var(--lw, 1))}
+.lvl5{stroke:var(--forest);stroke-width:calc(2.6px * var(--lw, 1))}
+.lvl4{stroke:var(--sage);stroke-width:calc(2.2px * var(--lw, 1))}
+.lvl3{stroke:var(--clay);stroke-width:calc(2px * var(--lw, 1))}
+.lvl2{stroke:var(--amber);stroke-width:calc(2.2px * var(--lw, 1));stroke-dasharray:8 6}
+.lvl1{stroke:var(--grey);stroke-width:calc(2px * var(--lw, 1));stroke-dasharray:2 6}
+
+.group-pill{cursor:pointer}
+.group-pill rect{fill:var(--panel);stroke:var(--pill);stroke-width:1.4}
+.group-pill text{font-family:var(--sans);font-size:12px;font-weight:600;fill:var(--pill)}
+.group-pill path{fill:none;stroke:var(--pill);stroke-width:1.6;stroke-dasharray:3 4}
+.group-pill:hover rect,.group-pill:focus rect{fill:var(--soft);stroke-width:2}
+.group-pill:focus{outline:none}
+/* ⚑ on a card with an open conflict: small and quiet; hidden when the tree is zoomed far out. */
+.xflag{cursor:pointer}
+.xflag rect{fill:transparent;stroke:none;pointer-events:all}
+.xflag text{font-size:14px;fill:var(--alert);opacity:.65;pointer-events:none}
+.xflag:hover text{opacity:1}
+.far .xflag{display:none}
+.expand{cursor:pointer}
+.expand rect{fill:var(--amber);stroke:var(--panel);stroke-width:2}
+.expand text{font-family:var(--sans);font-size:12px;font-weight:600;fill:#fff}
+.expand:hover rect{fill:#8f5a1f}
+.focusbar{position:absolute;top:58px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;max-width:calc(100% - 32px);background:var(--forest);color:#fff;border-radius:999px;padding:6px 6px 6px 16px;font-size:13px;box-shadow:0 6px 18px rgba(37,55,47,.2);z-index:6}
+.focusbar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.focusbar button{border:0;border-radius:999px;background:#fff;color:var(--forest);padding:6px 12px;font-size:12.5px;white-space:nowrap}
+.focusbar[hidden]{display:none}
+.focus-btn{display:block;margin:12px 0 0;border-color:var(--forest);color:var(--forest);font-size:13px}
+/* The card's own buttons in one row, «Это я» first; they wrap on a narrow screen */
+.card-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.card-actions:not(:has(button)){display:none}
+.card-actions .focus-btn{margin:0;padding:6px 10px;white-space:nowrap}
+.zoom{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:5}
+.zoom-row{display:flex;gap:8px}
+/* + and − are one control: a column of two halves with a thin rule between (also on the map) */
+.zoom-pair{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 2px 8px rgba(37,55,47,.1);overflow:hidden;width:max-content}
+.zoom-pair button{border:0;border-radius:0;box-shadow:none!important;background:none}
+.zoom-pair button+button{border-top:1px solid var(--line)}
+.zoom-pair button:hover{background:var(--soft)}
+#zoom-fit{display:inline-flex;align-items:center;justify-content:center;color:var(--forest)}
+.zoom button{width:42px;height:42px;padding:0;font-size:20px;box-shadow:0 2px 8px rgba(37,55,47,.1)}
+.hint{position:absolute;left:120px;bottom:calc(16px + env(safe-area-inset-bottom));margin:0;max-width:440px;font-size:12.5px;color:var(--muted);background:rgba(255,253,247,.9);padding:8px 12px;border-radius:10px;border:1px solid var(--line)}
+
+.legend{position:absolute;right:16px;top:12px;width:340px;max-width:calc(100% - 32px);max-height:calc(100% - 24px);overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 12px 32px rgba(37,55,47,.14);z-index:7}
+.legend h2{font-size:21px;margin:0 28px 6px 0}
+.legend h3{font-family:var(--serif);font-weight:400;font-size:17px;margin:16px 0 6px}
+.legend .about-lead{font-size:13px;color:var(--ink);margin:0 0 8px}
+.about-list{list-style:none;margin:0;padding:0}
+.about-list li{font-size:12.5px;color:var(--muted);line-height:1.4;padding:5px 0;border-top:1px solid var(--soft)}
+.about-list strong{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.legend-close{position:absolute;top:10px;right:10px;border:0;background:none;font-size:20px;line-height:1;padding:4px 8px}
+/* «?» in the header: what is here and how to read the lines */
+.about-toggle{width:34px;height:34px;padding:0;border-radius:50%;font-size:15px;font-weight:600;flex:none;color:var(--forest)}
+.about-toggle[aria-expanded=true]{background:var(--forest);color:#fff;border-color:var(--forest)}
+.legend p{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.legend-row{display:grid;grid-template-columns:46px 1fr;gap:10px;align-items:center;padding:5px 0;font-size:13px}
+.legend-row small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35}
+.legend-flag text{font-family:var(--sans);font-size:14px;fill:var(--alert);opacity:.7}
+.legend-row svg{width:46px;height:12px}
+
+/* Panel */
+#panel{position:fixed;top:var(--bar);right:0;bottom:0;width:var(--panel-w);background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;overflow-x:hidden;overflow-wrap:anywhere;overscroll-behavior:contain;z-index:10;transform:translateX(100%);transition:transform .22s ease;padding:0 22px 40px}
+#panel[data-state=open],#panel[data-state=peek],#panel[data-state=full]{transform:none}
+.grip{display:none}
+/* On a computer the card's left edge can be dragged: a wider card for reading a long life (kept in the browser). */
+.panel-resize{display:none}
+@media (min-width:761px){
+  body.panel-open .panel-resize{display:block;position:fixed;top:var(--bar);bottom:0;right:calc(var(--panel-w) - 4px);width:9px;z-index:11;cursor:col-resize;touch-action:none}
+  .panel-resize::after{content:"";position:absolute;top:50%;left:3px;width:3px;height:44px;margin-top:-22px;border-radius:2px;background:var(--line);opacity:0;transition:opacity .15s}
+  .panel-resize:hover::after,.panel-resize:focus-visible::after,body.resizing .panel-resize::after{opacity:1;background:var(--sage)}
+  body.resizing{cursor:col-resize;user-select:none}
+  body.resizing #panel{transition:none}
+}
+/* The card's top row is kept low; its shadow shows only once the card is scrolled under it */
+.panel-top{position:sticky;top:0;z-index:3;background:var(--panel);margin:0 -22px;padding:0 22px;transition:box-shadow .15s}
+#panel.scrolled .panel-top{box-shadow:0 6px 8px -8px rgba(37,55,47,.25)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0 0}
+#panel-body{padding-top:10px}
+/* On a computer the card's buttons share the line of its first heading: × at the right, «← Назад» at the
+   left. Once the card is scrolled, their row turns solid and the text passes under it. */
+@media (min-width:761px){
+  .panel-top{margin-bottom:-38px;background:transparent;pointer-events:none}
+  .panel-top button{pointer-events:auto}
+  #panel.scrolled .panel-top{background:var(--panel)}
+  #panel-body{padding-top:14px}
+  /* The first line of a card stays clear of «Печать» and × on its right */
+  #panel-body > .eyebrow:first-child{margin-right:84px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #panel:has(#print-card[hidden]) #panel-body > .eyebrow:first-child{margin-right:44px}
+  #panel:has(#back:not([hidden])) #panel-body > .eyebrow:first-child{margin-left:80px}
+  /* Anything else on top (the note «Кем приходится…») stands below the buttons */
+  #panel-body > :not(.eyebrow):first-child{margin-top:34px}
+}
+.expand-btn{display:none;border:1px solid var(--line);padding:5px 10px;font-size:12.5px;border-radius:999px}
+.panel-head .close{margin-left:auto;margin-right:-8px;border:0;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0}
+.panel-head .close svg{display:block}
+.back{border:0;padding:6px 10px;margin-left:-10px;background:none;color:var(--forest)}
+.eyebrow{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.card-title{font-size:27px;margin-bottom:6px}
+.life{color:var(--muted);margin:0 0 12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--ink)}
+.chip i{flex:none;width:8px;height:8px;border-radius:50%;background:currentColor}
+.c5{color:var(--forest)}.c4{color:var(--sage)}.c3{color:var(--clay)}.c2{color:var(--amber)}.c1{color:#7d7d75}
+.portrait{display:block;width:100%;max-height:340px;object-fit:contain;background:var(--soft);border-radius:12px;margin:14px 0 4px;border:0;padding:0;cursor:zoom-in}
+.portrait-cap{font-size:12px;color:var(--muted);margin:0 0 6px}
+#panel h3{font-size:18px;margin:26px 0 10px}
+.story p{margin:0 0 12px;max-width:72ch}
+.story .auto{color:var(--muted);font-size:13px}
+.ref{display:inline-block;border:0;background:var(--soft);color:var(--forest);font-size:11px;line-height:1;padding:3px 5px;border-radius:5px;vertical-align:super;margin:0 1px}
+.ref.r2,.ref.r1{background:#f6ead9;color:#87561f}
+/* Life line: the year on the left, a thin rule with a dot per event, the fact and its references. */
+.lifeline{list-style:none;margin:0;padding:0}
+.lifeline li{display:grid;grid-template-columns:66px 1fr;gap:0 12px;font-size:13.5px;line-height:1.45}
+.ll-year{padding:7px 0;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;font-size:13px;line-height:1.35}
+.lifeline li[hidden]{display:none}
+.ll-year small{display:block;font-size:11.5px;font-weight:500;color:var(--muted)}
+/* Sections of a long card: one quiet row under the card's buttons. */
+/* It stays under the card's buttons while the card scrolls; the section in view is marked. One line, scrolled
+   sideways when it does not fit. */
+.contents{position:sticky;top:var(--ptop,38px);z-index:2;display:flex;gap:16px;margin:14px -22px 0;padding:8px 22px;background:var(--panel);border-top:1px solid var(--soft);overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.contents::-webkit-scrollbar{display:none}
+.contents button{flex:none;border:0;background:none;padding:3px 0;font-size:13px;color:var(--forest);border-radius:0;border-bottom:2px solid transparent}
+.contents button:hover{background:none;color:var(--ink)}
+.contents button.on{color:var(--ink);border-bottom-color:var(--sage)}
+.contents small{color:var(--muted);font-size:12px}
+#panel.stuck .contents{border-top-color:transparent;box-shadow:0 6px 8px -8px rgba(37,55,47,.25)}
+#panel.stuck .panel-top{box-shadow:none}
+.ll-open{font-size:12.5px;color:var(--forest);padding:3px 10px;margin:6px 0 0 78px}
+.ll-year.rough{color:var(--muted);font-weight:500}
+.ll-what{position:relative;padding:7px 0 7px 16px;border-left:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+.ll-what::before{content:"";position:absolute;left:-4px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--panel);box-shadow:inset 0 0 0 1px var(--sage)}
+.lifeline li.edge-event .ll-what::before{background:var(--sage)}
+.lifeline li:first-child .ll-what{border-image:linear-gradient(transparent 13px,var(--line) 13px) 1}
+.lifeline li:last-child .ll-what{border-image:linear-gradient(var(--line) 14px,transparent 14px) 1}
+.lifeline li:only-child .ll-what{border:0}
+.ll-what .field{display:block;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);line-height:1.3;margin-bottom:1px}
+.ll-what .ref{vertical-align:baseline;margin-left:2px}
+.ll-note{font-size:12px;color:var(--muted);margin:6px 0 0 78px}
+.facts{list-style:none;padding:0;margin:0}
+.facts li{padding:8px 0;border-top:1px solid var(--soft)}
+.facts .field{display:block;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.kin{display:flex;flex-direction:column;gap:6px}
+.kin button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:10px 12px;min-width:0}
+.kin button>span:first-child{min-width:0}
+.kin small{display:block;color:var(--muted);font-size:12px}
+.kin .chip{flex:none;max-width:100%;white-space:nowrap}
+.flag{border-left:3px solid var(--alert);background:#fbf1ec;padding:10px 12px;border-radius:0 10px 10px 0;margin:10px 0;font-size:13.5px}
+.flag strong{display:block;margin-bottom:2px}
+.flag.solved{border-left-color:var(--grey);background:var(--soft)}
+.solved-group{margin:10px 0}
+.solved-group summary{cursor:pointer;font-size:13px;color:var(--muted);padding:4px 0}
+.decided{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.docs-group{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+.note{font-size:13.5px;color:var(--ink);background:var(--soft);padding:10px 12px;border-radius:10px}
+/* «Вам: …» and «Это я» on a card */
+.you{margin:-6px 0 12px;font-size:14px}
+.you .linklike{font-weight:600}
+.me-btn{display:inline-flex;align-items:center;gap:7px;border-color:#d8b98e;color:#6b4415;background:#fbefdc}
+.me-btn i{width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.me-btn:hover{background:#f6e3c6}
+
+/* «Знаете больше?» under a card, «Помогите заполнить» and the form for messages */
+.tell{margin:30px 0 0;padding:14px 16px;border:1px dashed #cbbfa6;border-radius:12px;background:#fbf8f0}
+.tell p{margin:0 0 10px;font-size:14px}
+.send-open,.ask-btn{border-color:var(--forest);color:var(--forest);font-size:13.5px}
+.ask{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 12px;background:#fffefa}
+.ask h4{font-family:var(--serif);font-weight:400;font-size:18px;line-height:1.25;margin:0 0 10px}
+.ask p{margin:0 0 10px;font-size:14px}
+.ask-key{display:flex;align-items:center;gap:8px;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.ask-key .chip{letter-spacing:0;text-transform:none}
+.ask-actions{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:12px}
+.ask-actions .linklike{font-size:13.5px}
+.ask-x{font-size:14px}
+.ask-x strong{margin-bottom:4px}
+.ask-group{border-top:1px solid var(--line)}
+.ask-group:last-of-type{border-bottom:1px solid var(--line)}
+.ask-group summary{cursor:pointer;padding:10px 0;font-size:14px}
+.ask-list{list-style:none;margin:0 0 10px;padding:0}
+.ask-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--soft)}
+.ask-name{border:0;background:none;padding:2px 0;text-align:left;color:var(--forest);font-size:14px;min-width:0}
+.ask-name small{display:block;color:var(--muted);font-size:12px}
+.ask-btn.small{flex:none;padding:5px 10px;font-size:12.5px}
+.send label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 0}
+/* 16px: iPhone zooms into a smaller field on focus */
+.send input:not([type=file]),.send textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff;font-size:16px;color:var(--ink)}
+.send textarea{resize:vertical;min-height:130px;line-height:1.45;font-family:var(--sans)}
+.send input:focus,.send textarea:focus{border-color:var(--forest);outline:none;box-shadow:0 0 0 3px rgba(47,93,71,.15)}
+.send-files{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:14px 0 0}
+.send-files small{color:var(--muted);font-size:12px}
+.send .file-pick{position:relative;display:inline-flex;margin:0;border:1px solid var(--forest);border-radius:8px;padding:7px 12px;color:var(--forest);font-size:13.5px;cursor:pointer;background:var(--panel)}
+.send .file-pick:focus-within{outline:3px solid var(--amber);outline-offset:2px}
+.file-pick input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.file-list{list-style:none;margin:0;padding:0;flex:1 0 100%}
+.file-list li{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--soft);font-size:13.5px}
+.file-list span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-list small{color:var(--muted);flex:none}
+.file-list button{border:0;padding:2px 8px;font-size:18px;line-height:1;background:none}
+.send .muted{font-size:12.5px;margin:14px 0 0}
+.send-btn{margin-top:12px;background:var(--forest);border-color:var(--forest);color:#fff;padding:10px 22px;font-size:15px}
+.send-btn:hover{background:#264d3b}
+.send-btn:disabled{opacity:.6;cursor:progress}
+.send-status{min-height:1.4em;font-size:13.5px;margin:10px 0 0}
+.send-status.bad{color:var(--alert)}
+.sent,.contact{margin:16px 0;padding:16px;border-radius:12px;background:var(--soft)}
+.sent-title{font-family:var(--serif);font-size:19px;margin:0 0 6px}
+.sent .muted{margin:0 0 8px}
+
+/* Reliability scale */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:14px 0 6px}
+.scale span{height:8px;border-radius:4px;background:var(--line)}
+.scale.s5 span{background:var(--forest)}.scale.s4 span:nth-child(-n+4){background:var(--sage)}
+.scale.s3 span:nth-child(-n+3){background:var(--clay)}.scale.s2 span:nth-child(-n+2){background:var(--amber)}
+.scale.s1 span:first-child{background:#8f8f86}
+.scale-cap{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.verdict{font-family:var(--serif);font-size:20px;margin:10px 0 4px}
+
+/* Evidence */
+.docs{display:flex;flex-direction:column;gap:12px}
+.doc{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-align:left;padding:0;display:block;width:100%}
+.doc:hover{border-color:var(--forest);background:#fff}
+.doc .crop{display:block;width:100%;background-repeat:no-repeat;background-color:var(--soft)}
+.doc img{display:block;width:100%;max-height:260px;object-fit:cover;object-position:top;background:var(--soft)}
+.doc .meta{display:block;padding:10px 12px;font-size:13px}
+.doc .meta strong{display:block;font-weight:600;font-size:13.5px;line-height:1.35}
+.doc .meta small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.doc.textdoc .meta{padding:12px}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.doc-grid .doc img{height:120px;max-height:none}
+.doc-grid .doc .meta{padding:6px 8px;font-size:11.5px}
+.doc-grid .doc .meta strong{font-size:11.5px;font-weight:500;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.claim-card{background:var(--soft);border-radius:12px;padding:14px;margin:8px 0 14px}
+.claim-card .value{font-family:var(--serif);font-size:19px;margin:4px 0 8px}
+.loc{font-size:12.5px;color:var(--muted)}
+.muted{color:var(--muted);font-size:13px}
+
+/* Document viewer */
+#viewer{position:fixed;inset:0;background:#1d2420;z-index:40;display:flex;flex-direction:column;color:#eef0ea}
+#viewer[hidden]{display:none}
+.viewer-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:#252d29}
+.viewer-title{flex:1;min-width:0}
+.viewer-title strong{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewer-title small{display:block;font-size:12px;color:#aab4ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewer-tools{display:flex;align-items:center;gap:6px;font-size:13px}
+.viewer-tools button{background:#36403b;border-color:#46514b;color:#eef0ea;min-width:40px;height:38px;padding:0 10px;font-size:18px}
+.viewer-tools button[disabled]{opacity:.35}
+.viewer-stage{flex:1;position:relative;overflow:hidden;touch-action:none;cursor:grab}
+#viewer-sheet{position:absolute;left:0;top:0;transform-origin:0 0}
+#viewer-sheet img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none}
+#viewer-sheet iframe{width:100%;height:100%;border:0;background:#fff}
+.box{position:absolute;border:3px solid #f0a33a;border-radius:4px;box-shadow:0 0 0 9999px rgba(15,20,18,.38)}
+.box.other{border-color:rgba(240,163,58,.55);box-shadow:none;border-style:dashed}
+.box span{position:absolute;left:-3px;bottom:100%;margin-bottom:4px;background:#f0a33a;color:#1d2420;font-size:12px;padding:2px 7px;border-radius:4px;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis}
+.viewer-foot{padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#252d29;font-size:12.5px;color:#cfd6cf;max-height:30vh;overflow:auto}
+.viewer-foot a{color:#9fd0b3}
+
+/* Narrower screens: the branch switcher takes its own row under the header and scrolls sideways */
+@media (max-width:1179px){
+  :root{--bar:100px}
+  .bar{flex-wrap:wrap;align-content:center;row-gap:8px}
+  .groups{order:10;flex:1 0 100%;gap:6px;padding:0;border:0;border-radius:0;background:none;overflow-x:auto;scrollbar-width:none;touch-action:pan-x}
+  .groups::-webkit-scrollbar{display:none}
+  .groups button{border:1px solid var(--line);background:var(--panel)}
+  .groups button.active{border-color:var(--forest)}
+}
+
+/* One-row header on a computer: with the reader's plate the name of the site gives way to the search; on a laptop
+   the plate and «Помогите заполнить» take their short forms («● Андрей», «Помочь») */
+@media (min-width:1180px) and (max-width:1599px){
+  .bar:has(.me-pill) .brand-text{display:none}
+}
+@media (min-width:1180px) and (max-width:1439px){
+  .help-toggle .long,.me-pill .long{display:none}
+  .help-toggle .short,.me-pill .short{display:inline}
+}
+
+/* Phones and narrow tablets: the card becomes a bottom sheet */
+@media (max-width:760px){
+  :root{--bar:94px}
+  .bar{row-gap:6px}
+  .groups button{padding:4px 11px;font-size:12.5px}
+  .brand-text{display:none}
+  .bar{gap:10px;padding:0 12px}
+  .legend-toggle{padding:7px 9px;font-size:12.5px}
+  .bar{gap:8px}
+  .search input{padding:8px 10px}
+  /* Searching, the field takes the row: the three buttons step aside until the search is left */
+  .bar:has(.search:focus-within) .legend-toggle,.bar:has(#results:not([hidden])) .legend-toggle{display:none}
+  .news-toggle .long,.help-toggle .long{display:none}
+  .news-toggle .short,.help-toggle .short{display:inline}
+  .me-pill .long{display:none}
+  .me-pill .short{display:inline}
+  .me-ask{left:12px;right:12px}
+  .card-actions{gap:6px}
+  .card-actions .focus-btn{padding:6px 8px;font-size:12.5px}
+  .hint{left:116px;right:12px;font-size:12px}
+  #panel{top:auto;left:0;width:auto;height:calc(100% - var(--bar));border-left:0;border-top:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:0 -12px 32px rgba(37,55,47,.16);transform:translateY(100%);padding:0 18px calc(40px + env(safe-area-inset-bottom))}
+  #panel[data-state=peek]{transform:translateY(52%)}
+  #panel[data-state=full],#panel[data-state=open]{transform:none}
+  /* The top strip of the card is its handle: dragged by a finger, it moves the card instead of scrolling it */
+  .panel-top{margin:0 -18px;padding:0 18px;touch-action:none}
+  .contents{margin:14px -18px 0;padding:8px 18px}
+  .grip{display:block;width:100%;border:0;background:var(--panel);padding:10px 0 2px}
+  .expand-btn{display:inline-flex;margin-left:auto}
+  .panel-head .close{margin-left:0}
+  .grip span{display:block;margin:auto;width:42px;height:5px;border-radius:3px;background:var(--line)}
+  .panel-head{padding:2px 0 4px}
+  .card-title{font-size:24px}
+  .zoom{bottom:calc(16px + env(safe-area-inset-bottom))}
+  .legend{top:auto;bottom:12px;left:12px;right:12px;width:auto;max-height:70vh;overflow:auto}
+  /* Opened while a card is open, the legend stands in the part of the tree the half-open card leaves free */
+  body.panel-open .legend{top:12px;bottom:auto;max-height:calc(52% - 24px)}
+  .viewer-tools #viewer-page{display:none}
+}
+@media (prefers-reduced-motion:reduce){#panel{transition:none}}
+
+.merge-plate{background:var(--soft);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:14px}
+.merge-plate p{margin:6px 0 0}
+/* The grounds of a merged card are a row of labels on the green plate, not footnotes: on the line of the text and
+   light, so a link of the strongest level does not vanish green on green. */
+.merge-plate .ref{vertical-align:baseline;font-size:12px;padding:4px 7px;margin:3px 1px;box-shadow:inset 0 0 0 1px #e6cba4}
+.merge-plate .ref:not(.r1):not(.r2){background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+.record-title{margin-top:18px}
+.record-sep{border:0;border-top:1px solid var(--line, #d9d4c7);margin:22px 0 4px}
+.chain{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.chain li{display:flex;flex-direction:column;gap:6px}
+.chain button{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;padding:10px 12px;min-width:0}
+.chain button small{display:block;color:var(--muted);font-size:12px}
+.chain .chain-link{border:0;background:none;padding:2px 12px;margin-left:12px;border-left:2px solid var(--line);border-radius:0}
+.chain .chain-link small{font-size:13px;color:var(--ink)}
+.linklike{border:0;background:none;padding:0;color:var(--forest);text-decoration:underline;font:inherit;cursor:pointer}
+.path-pick{margin:12px 0}
+.chain .via{display:block;color:var(--muted);font-size:12px}
+.chain .chain-link small{flex:1 1 auto;min-width:0}
+.chain .chain-link .chip{flex:none;white-space:nowrap}
+#path-overlay{pointer-events:none}
+
+
+/* A page over the tree (the map); the card opens over it */
+.page{position:absolute;inset:0;z-index:6;background:var(--paper);display:flex;flex-direction:column}
+.page[hidden]{display:none}
+body.page-open .hint,body.page-open .zoom,body.page-open .focusbar{display:none}
+.page-head{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);flex:none}
+.page-head h2{font-size:20px}
+.page-head .page-close{margin-left:auto;font-size:13px}
+.map-back{font-size:13px;color:var(--forest)}
+.map-body{flex:1;display:flex;min-height:0}
+.map-list{width:280px;flex:none;overflow:auto;border-right:1px solid var(--line);padding:6px 10px 20px;order:-1}
+.map-list button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 8px;border-radius:8px;font-size:13.5px}
+.map-list button:hover{background:var(--soft)}
+.map-list small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.map-count{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:12px 8px 4px}
+.map-src{font-size:11.5px;color:var(--muted);margin:14px 8px 0}
+.map-wrap{flex:1;min-width:0;position:relative;background:#e9eef0}
+#map-svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#map-svg:active{cursor:grabbing}
+#map-svg.moving .map-labels,#map-svg.moving .map-towns,#map-svg.moving .map-scale{visibility:hidden}
+.map-zoom{position:absolute;right:12px;top:12px;z-index:2}
+.map-zoom button{width:38px;height:38px;padding:0;font-size:19px}
+.map-base .land{fill:var(--paper);stroke:none}
+.map-base .coast{fill:none;stroke:#c3cdd1;stroke-width:.8;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.map-base .frontier{fill:none;stroke:#c2bcab;stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.map-base .lake{fill:#e9eef0;stroke:#c3d0d6;stroke-width:.6;vector-effect:non-scaling-stroke}
+.map-base .river{fill:none;stroke:#bccdd5;stroke-width:.9;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.map-base .river.r2,.map-base .river.r3,.map-base .river.r4{stroke-width:1.3}
+.map-base .borders{fill:none;stroke:#d9d2c3;stroke-width:.7;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.map-towns rect{fill:var(--paper);stroke:#bcc0b8;stroke-width:1}
+.map-towns text{font-size:10.5px;fill:#a2a79e;paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
+.map-scale path{fill:none;stroke:#6b736a;stroke-width:1.2}
+.map-scale text{font-size:11px;fill:#6b736a}
+/* Where the family was: a soft green pool under its points, so the map shows the family's places at a glance */
+.map-zones circle{fill:url(#map-zone);}
+.map-pt{cursor:pointer;outline:none}
+.map-pt .hit{fill:transparent}
+.map-pt .dot{fill:var(--forest);stroke:var(--panel);stroke-width:1.5}
+.map-pt .halo{fill:var(--forest);opacity:.16}
+.map-pt.approx .dot{fill:var(--panel);stroke:var(--forest);stroke-dasharray:2 1.6}
+.map-pt.many .dot{fill:#e4ede6;stroke:var(--forest);stroke-width:1.6}
+.map-pt.many text{font-size:11.5px;font-weight:600;fill:var(--forest);text-anchor:middle;pointer-events:none}
+.map-pt:hover .dot,.map-pt:focus-visible .dot{stroke:var(--amber);stroke-width:2}
+.map-pt.marked .dot{fill:var(--amber);stroke:var(--panel)}
+.map-pt.marked.many text{fill:#fff}
+.map-labels text{fill:var(--ink);font-weight:600;paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round;cursor:pointer}
+.map-labels text.many{font-weight:600;fill:var(--forest)}
+.place-people{list-style:none;padding:0;margin:0}
+.place-people li{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:8px 0;border-top:1px solid var(--soft);font-size:13.5px}
+.pp-name{border:0;background:none;padding:0;text-align:left;color:var(--forest);font-weight:600}
+.pp-name:hover{background:none;text-decoration:underline}
+.pp-years{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pp-what{grid-column:1/-1;color:var(--muted);font-size:12.5px}
+.pp-what .ref{vertical-align:baseline}
+.places-line{font-size:13px;margin:14px 0 0}
+.places-line span{color:var(--muted)}
+@media (min-width:761px){
+  body.page-open.panel-open .map-wrap{margin-right:var(--panel-w)}
+}
+@media (max-width:760px){
+  .map-body{flex-direction:column}
+  .map-wrap{flex:none;height:56%}
+  .map-list{width:auto;order:0;border-right:0;border-top:1px solid var(--line);flex:1}
+  .page-head{padding:8px 12px}
+  .page-head h2{font-size:18px}
+}
+
+/* Documents: a grid of the cited scans, by place or by decade */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--panel)}
+.seg button{border:0;background:none;border-radius:999px;padding:4px 12px;font-size:13px}
+.seg button[aria-pressed=true]{background:var(--forest);color:#fff}
+.docs-jump{display:flex;gap:16px;padding:8px 16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;white-space:nowrap;flex:none}
+.docs-jump::-webkit-scrollbar{display:none}
+.docs-jump button{flex:none;border:0;background:none;padding:2px 0;font-size:13px;color:var(--forest)}
+.docs-jump button{border-bottom:2px solid transparent;border-radius:0}
+.docs-jump button:hover{background:none;color:var(--ink)}
+.docs-jump button.on{color:var(--ink);border-bottom-color:var(--sage)}
+.docs-jump small{color:var(--muted);font-size:12px}
+.docs-body{flex:1;overflow:auto;padding:4px 16px 40px}
+.docs-lead{max-width:72ch;font-size:13px}
+.docs-section h3{font-family:var(--serif);font-weight:400;font-size:19px;margin:22px 0 10px}
+.docs-section h3 small{font-family:var(--sans);font-size:12px;color:var(--muted)}
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.doc-tile{display:flex;flex-direction:column;padding:0;text-align:left;overflow:hidden;border-radius:10px;min-width:0}
+.tile-img{display:block;height:130px;background-color:var(--soft);background-repeat:no-repeat;border-bottom:1px solid var(--line)}
+.tile-meta{padding:7px 9px 9px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile-meta strong{font-size:12px;font-weight:500;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile-meta small{font-size:11.5px;color:var(--muted);line-height:1.3}
+.tile-meta .tile-who{color:var(--forest)}
+@media (max-width:760px){
+  .docs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .docs-body{padding:4px 12px 40px}
+  .docs-jump{padding:8px 12px}
+  .page-head .seg button{padding:4px 9px;font-size:12.5px}
+  .page-head .page-close{padding:7px 9px;font-size:12.5px}
+}
+
+/* Booklet of stories: a reading column on the screen, A4 in print */
+.page-head{gap:14px}
+/* A list of our own (the booklet's «whose»): opens downwards, with room around the text */
+.pick{position:relative;min-width:0}
+.pick-btn{display:inline-flex;align-items:center;gap:10px;font-size:13.5px;padding:7px 12px 7px 14px;max-width:100%}
+.pick{flex:0 1 auto;max-width:46vw}
+.page-close{white-space:nowrap;flex:none}
+.book-print{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:36px;padding:0;color:var(--forest)}
+.pick-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-btn svg{flex:none;color:var(--muted)}
+.pick-list{position:absolute;left:0;top:calc(100% + 6px);z-index:30;min-width:100%;max-height:60vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(37,55,47,.14);padding:6px;display:flex;flex-direction:column}
+.pick-list[hidden]{display:none}
+.pick-list button{border:0;background:none;text-align:left;padding:9px 12px;border-radius:8px;font-size:14px;white-space:nowrap}
+.pick-list button:hover{background:var(--soft)}
+.pick-list button[aria-selected=true]{color:var(--forest);font-weight:600}
+.book-print{font-size:13px}
+.book-body{flex:1;overflow:auto;padding:0 16px 60px}
+.book{max-width:680px;margin:0 auto;font-family:var(--serif);font-size:16px;line-height:1.6;color:var(--ink)}
+.book-cover{padding:28px 0 18px;border-bottom:1px solid var(--line)}
+.book-cover h1{font-size:32px;margin:4px 0 10px}
+.book-cover p:not(.eyebrow){font-size:14px;color:var(--muted);font-family:var(--sans)}
+.book-person{padding:26px 0 8px;border-bottom:1px solid var(--soft)}
+.book-person h2{font-size:24px}
+.book-person h3{font-size:16px;margin:18px 0 6px;font-family:var(--sans);font-weight:600;letter-spacing:.4px;text-transform:uppercase;font-size:11.5px;color:var(--muted)}
+.book-life{color:var(--muted);font-family:var(--sans);font-size:13.5px;margin:4px 0 12px}
+.book-person p{margin:0 0 10px}
+.book-person sup{font-family:var(--sans);font-size:10px;color:var(--forest);margin-left:1px}
+.book-ll{border-collapse:collapse;font-size:13.5px;font-family:var(--sans);line-height:1.45}
+.book-ll td{padding:3px 10px 3px 0;vertical-align:top;border-top:1px solid var(--soft)}
+.book-ll td:first-child{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
+.book-ll em{font-style:normal;color:var(--muted)}
+.book-notes{font-family:var(--sans);font-size:12px;line-height:1.45;color:var(--ink);padding-left:22px;margin:0}
+.book-notes li{margin:0 0 3px}
+.book-notes span{color:var(--muted)}
+.print-line{font-size:13px;margin:18px 0 0}
+.print-head,.print-legend{display:none}
+@media (max-width:760px){
+  .book{font-size:15.5px}
+  .book-cover h1{font-size:26px}
+}
+
+/* Print: the tree on A3 without the header, the card and the buttons, its lines thin; or the booklet on A4 */
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  .bar,#panel,.panel-resize,.zoom,.hint,#legend,.focusbar,#viewer,.me-ask,.intro,.modes,.today-line,.page-head,.docs-jump{display:none!important}
+  body.printing-tree .page{display:none!important}
+  body.printing-tree #stage{position:static;inset:auto;display:flex;flex-direction:column}
+  body.printing-tree .print-head{order:-1}
+  body.printing-tree .print-legend{order:1;display:flex;flex-wrap:wrap;gap:2px 16px;margin:3mm 0 0;font:8pt var(--sans);color:#555}
+  body.printing-tree .group-pill{display:none}
+  /* A3 landscape less the margins, the title and the legend; the tree fits inside (preserveAspectRatio meet) */
+  body.printing-tree #tree{position:static;width:100%;height:247mm;display:block;background:none}
+  body.printing-tree .print-head{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;font:10pt var(--sans);color:#333;margin:0 0 3mm}
+  body.printing-tree .print-head strong{font:400 15pt var(--serif)}
+  .print-legend i{font-style:normal;display:inline-flex;align-items:center;gap:5px}
+  .print-legend svg{width:30px;height:8px}
+  .print-legend .edge{vector-effect:none;stroke-width:1.4}
+  body.printing-tree .edge{vector-effect:none;stroke-width:2.4!important}
+  body.printing-tree .lvl4{stroke-width:2!important}
+  body.printing-tree .lvl1,body.printing-tree .lvl3{stroke-width:1.8!important}
+  body.printing-tree .hit,body.printing-tree .expand,body.printing-tree .group-fold path{display:none}
+  /* A chain of «Кем приходится» prints as on the screen, its weak stretches included, a little stronger than the rest */
+  body.printing-tree .edge.on-path{stroke-width:3.6!important}
+  body.printing-tree .node rect{stroke-width:1}
+  body.printing-book #stage>*:not(#book-page){display:none!important}
+  body.printing-book #stage,body.printing-book .page,body.printing-book .book-body{position:static;display:block;overflow:visible;height:auto;padding:0}
+  body.printing-book .book{max-width:none;font-size:11pt;line-height:1.5}
+  .book-cover{break-after:page;padding-top:60mm;border:0}
+  .book-cover h1{font-size:28pt}
+  .book-person{break-inside:auto;border:0;padding:0 0 8mm}
+  .book-person h2,.book-person h3{break-after:avoid}
+  .book-person h2{font-size:17pt}
+  .book-ll tr,.book-notes li{break-inside:avoid}
+  .book-person sup{color:#333}
+}
+
+/* Days of memory */
+.days-body{flex:1;overflow:auto;padding:0 16px 60px}
+.days{max-width:680px;margin:0 auto}
+.days h3{font-family:var(--serif);font-weight:400;font-size:20px;margin:24px 0 8px}
+.days h3 small{font-family:var(--sans);font-size:13px;color:var(--muted)}
+.days h4{font-family:var(--sans);font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:16px 0 4px;font-weight:600}
+.mem-list{list-style:none;margin:0;padding:0}
+.mem{display:grid;grid-template-columns:132px 1fr;gap:0 12px;padding:8px 0;border-top:1px solid var(--soft);font-size:14px;line-height:1.45}
+.mem-day{font-weight:600;font-variant-numeric:tabular-nums}
+.mem.church .mem-day{color:#9a7426}
+.mem-day small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.mem-what em{font-style:normal;font-weight:600;color:var(--ink)}
+.mem.life .mem-what em{color:var(--forest)}
+.days-month{display:flex;align-items:baseline;gap:10px;margin:24px 0 8px}
+.days-month h3{margin:0;flex:1;text-align:center}
+.days-month button{font-size:12.5px;color:var(--forest);padding:4px 10px;white-space:nowrap}
+.mem-what .ref{vertical-align:baseline}
+.days-year{margin:26px 0 0}
+.days-year summary{cursor:pointer;color:var(--forest);font-size:14px;padding:6px 0}
+@media (max-width:760px){.mem{grid-template-columns:1fr}.mem-day{font-size:13px}}
+
+/* Printing: the printer under the zoom buttons prints the tree; the card's «Печать» prints the card */
+.print-toggle svg,.print-card svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.print-toggle{display:inline-flex;align-items:center;justify-content:center;color:var(--forest)}
+.print-card{display:inline-flex;align-items:center;justify-content:center;border:0;background:none;color:var(--forest);width:34px;height:34px;padding:0;margin-left:auto;border-radius:8px}
+.print-card:hover{background:var(--soft)}
+.print-card svg{display:block}
+.print-card svg{width:18px;height:18px}
+.panel-head .print-card:not([hidden])+.close{margin-left:0}
+.print-card-head{display:none}
+.print-card[hidden]{display:none}
+@media (max-width:760px){.print-card{display:none}}
+@media print{
+  body.printing-card .bar,body.printing-card #stage,body.printing-card .panel-resize{display:none!important}
+  body.printing-card #panel{display:block!important;position:static;transform:none;width:auto;height:auto;max-height:none;overflow:visible;border:0;box-shadow:none;padding:0;background:#fff}
+  body.printing-card .panel-top,body.printing-card .card-actions,body.printing-card .contents,body.printing-card .tell,body.printing-card .print-line,body.printing-card .ll-open,body.printing-card form.send,body.printing-card .path-pick{display:none!important}
+  body.printing-card .lifeline li[hidden]{display:grid!important}
+  body.printing-card .print-card-head{display:block;font:9pt var(--sans);color:#666;margin:0 0 4mm}
+  body.printing-card #panel-body{font-size:10.5pt}
+  body.printing-card .card-title{font-size:20pt}
+  body.printing-card #panel h3{break-after:avoid}
+  body.printing-card .lifeline li,body.printing-card .kin button,body.printing-card .doc{break-inside:avoid}
+  body.printing-card .doc-grid{grid-template-columns:repeat(4,1fr)}
+  body.printing-card .ref{background:none!important;padding:0 1px;color:#555!important}
+}
+
+/* Side arrows of the viewer: the previous and the next document of «Документы» */
+.viewer-doc{position:absolute;top:50%;z-index:2;width:44px;height:64px;margin-top:-32px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:10px;background:rgba(37,45,41,.72);color:#eef0ea}
+.viewer-doc:hover{background:rgba(54,64,59,.9)}
+.viewer-doc[disabled]{opacity:.25;cursor:default}
+.viewer-doc[hidden]{display:none}
+.viewer-doc.prev{left:10px}.viewer-doc.next{right:10px}
+
+/* The switch of modes: Древо · Карта · Документы, like the switch of branches; on a phone, the bar at the foot */
+.modes{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel);flex:none}
+.modes button{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:5px 13px;font-size:13px;line-height:1.3;background:none;white-space:nowrap}
+.modes svg{flex:none}
+/* On a laptop the switch shows its signs only (the name is in the tooltip), and «Что нового» its short form */
+@media (min-width:761px) and (max-width:1439px){.news-toggle .long{display:none}.news-toggle .short{display:inline}}
+@media (min-width:761px) and (max-width:1599px){.bar .modes .long{display:none}.bar .modes button{padding:5px 10px}}
+.modes button:hover{background:var(--soft)}
+.modes button[aria-pressed=true]{background:var(--forest);color:#fff}
+/* «В этот день»: a quiet line at the foot of the tree */
+.today-line{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:4;max-width:min(560px,calc(100% - 120px));border:1px solid var(--line);background:rgba(255,253,247,.92);border-radius:999px;padding:7px 14px;font-size:12.5px;color:var(--ink);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-line span{color:var(--muted)}
+.today-line small{color:var(--muted);font-size:12px}
+.today-line:hover{background:var(--panel);color:var(--forest)}
+.today-line[hidden]{display:none}
+body.panel-open .today-line{display:none}
+.modes-foot{display:none}
+#stage:has(#focusbar:not([hidden])) .today-line{display:none}
+@media (max-width:1179px){.today-line{top:12px;bottom:auto;right:12px}}
+@media (max-width:760px){
+  :root{--modes:58px}
+  .bar .modes{display:none}
+  /* A tab bar as in phone apps: the sign over its name, each in the middle of its third; the chosen one green */
+  .modes-foot{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:9;border-radius:0;border:0;border-top:1px solid var(--line);padding:5px 10px calc(5px + env(safe-area-inset-bottom));background:rgba(245,242,233,.97);gap:4px}
+  .modes-foot button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 0 5px;border-radius:12px;font-size:11.5px;font-weight:500;letter-spacing:.1px;color:var(--muted)}
+  .modes-foot button svg{width:22px;height:22px;stroke-width:1.6}
+  .modes-foot button:hover{background:none}
+  .modes-foot button[aria-pressed=true]{background:var(--soft);color:var(--forest)}
+  #stage{bottom:calc(var(--modes) + env(safe-area-inset-bottom))}
+  .today-line{left:12px;right:12px;top:10px;max-width:none;font-size:12px}
+}
+
+.focus-btn svg{vertical-align:-2px;margin-right:6px}
+
+/* The booklet's head on a phone: the title and «К древу» on top, «whose booklet» and «Печать» below */
+@media (max-width:760px){
+  .book-page .page-head{flex-wrap:wrap;row-gap:8px}
+  .book-page .page-head h2{flex:1 1 auto;order:1}
+  .book-page .page-head .page-close{order:2}
+  .book-page .pick{order:3;flex:1 1 calc(100% - 60px);max-width:none;min-width:0}
+  .book-page .pick-btn{width:100%;justify-content:space-between}
+  .book-page .book-print{order:4}
+  .book-page .pick-list{right:0}
+  .book-page .pick-list button{white-space:normal}
+}
+/* RU / EN in the header, and the link to the source code at the foot of «?» */
+.lang-toggle{font-size:12px;font-weight:600;letter-spacing:.04em;min-width:36px}
+.legend-source{margin:14px 0 0;font-size:13px}
+.legend-source a{color:var(--muted,inherit)}

@@ -1,0 +1,12 @@
+{
+ "note": "Words that stop the build when they stand outside quotes in stories, «What's new» and questions (Python regular expressions, case-insensitive). For example, kinship counted from the author: the whole family reads the site, so full names are better. warn — only a warning. exceptions — [{\"where\": \"story:<id>\", \"phrase\": \"exact phrase\", \"why\": \"…\"}].",
+ "words": [
+  "\\bпраба\\w*",
+  "\\bпраде\\w*"
+ ],
+ "warn": [
+  "\\bбабушк\\w*",
+  "\\bдедушк\\w*"
+ ],
+ "exceptions": []
+}

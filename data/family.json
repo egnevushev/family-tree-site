@@ -1,0 +1,1406 @@
+{
+ "schema_version": 1,
+ "updated": "2026-01-15",
+ "title": {
+  "ru": "Соколовы и Вершинины (демо)",
+  "en": "The Sokolovs and the Vershinins (demo)"
+ },
+ "root_person_id": "andrey",
+ "status_labels": {
+  "primary_document": "В документе эпохи",
+  "publication": "В публикации",
+  "index_record": "В указателе",
+  "family_testimony": "Со слов семьи",
+  "inference": "Вероятная идентификация — проверить",
+  "archive_lead": "Архивная зацепка",
+  "chart_only": "Только схема",
+  "unverified_tree": "Чужое дерево — проверить",
+  "unknown": "Неизвестно"
+ },
+ "people": [
+  {
+   "id": "andrey",
+   "name": {
+    "ru": "Соколов Андрей Павлович",
+    "en": "Sokolov Andrey Pavlovich"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1990-03-12",
+   "death": "",
+   "note": {
+    "ru": "Составитель древа (демо).",
+    "en": "Keeper of the tree (demo)."
+   },
+   "media": []
+  },
+  {
+   "id": "misha",
+   "name": {
+    "ru": "Соколов Михаил Андреевич",
+    "en": "Sokolov Mikhail Andreevich"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "2015-09-01",
+   "death": "",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "pavel",
+   "name": {
+    "ru": "Соколов Павел Николаевич",
+    "en": "Sokolov Pavel Nikolaevich"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1962-07-04",
+   "death": "",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "irina",
+   "name": {
+    "ru": "Соколова (Вершинина) Ирина Сергеевна",
+    "en": "Sokolova (Vershinina) Irina Sergeevna"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1964-11-20",
+   "death": "",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "nikolay",
+   "name": {
+    "ru": "Соколов Николай Иванович",
+    "en": "Sokolov Nikolay Ivanovich"
+   },
+   "group": "family",
+   "status": "primary_document",
+   "birth": "1931-02-15",
+   "death": "2004-08-03",
+   "note": "",
+   "media": [
+    "F-PHOTO-1955"
+   ]
+  },
+  {
+   "id": "zinaida",
+   "name": {
+    "ru": "Соколова (Белова) Зинаида Петровна",
+    "en": "Sokolova (Belova) Zinaida Petrovna"
+   },
+   "group": "family",
+   "status": "primary_document",
+   "birth": "1934-05-30",
+   "death": "2011-01-12",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "sergey",
+   "name": {
+    "ru": "Вершинин Сергей Алексеевич",
+    "en": "Vershinin Sergey Alekseevich"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1936-10-08",
+   "death": "1999-03-21",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "galina",
+   "name": {
+    "ru": "Вершинина (Орлова) Галина Фёдоровна",
+    "en": "Vershinina (Orlova) Galina Fyodorovna"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1938",
+   "death": "2015",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "maria",
+   "name": {
+    "ru": "Соколова Мария Ивановна",
+    "en": "Sokolova Maria Ivanovna"
+   },
+   "group": "family",
+   "status": "family_testimony",
+   "birth": "1928",
+   "death": "1999",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "ivan",
+   "name": {
+    "ru": "Соколов Иван Матвеевич",
+    "en": "Sokolov Ivan Matveevich"
+   },
+   "group": "historical",
+   "status": "primary_document",
+   "birth": "1898-01-14",
+   "death": "1942",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "anna",
+   "name": {
+    "ru": "Соколова Анна Егоровна",
+    "en": "Sokolova Anna Egorovna"
+   },
+   "group": "historical",
+   "status": "primary_document",
+   "birth": "1902",
+   "death": "1980-06-02",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "petr",
+   "name": {
+    "ru": "Белов Пётр Ильич",
+    "en": "Belov Pyotr Ilyich"
+   },
+   "group": "historical",
+   "status": "family_testimony",
+   "birth": "1905",
+   "death": "1970",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "alexey",
+   "name": {
+    "ru": "Вершинин Алексей Григорьевич",
+    "en": "Vershinin Alexey Grigoryevich"
+   },
+   "group": "historical",
+   "status": "unverified_tree",
+   "birth": "1903-03-17",
+   "death": "1960",
+   "note": "",
+   "media": []
+  },
+  {
+   "id": "matvey",
+   "name": {
+    "ru": "Соколов Матвей Иванович",
+    "en": "Sokolov Matvey Ivanovich"
+   },
+   "group": "historical",
+   "status": "primary_document",
+   "birth": "ок. 1868",
+   "death": "1925-11-02",
+   "note": "",
+   "media": [],
+   "date_display": {
+    "birth": {
+     "text": {
+      "ru": "около 1868 — по возрасту в записи о смерти (57 лет)",
+      "en": "about 1868 — by the age in the death record (57)"
+     },
+     "short": "≈1868",
+     "refs": [
+      "C045"
+     ],
+     "source_ids": [
+      "D-2-1-7"
+     ]
+    }
+   }
+  },
+  {
+   "id": "grigory",
+   "name": {
+    "ru": "Вершинин Григорий Васильевич",
+    "en": "Vershinin Grigory Vasilyevich"
+   },
+   "group": "historical",
+   "status": "publication",
+   "birth": "1872",
+   "death": "1937-11-20",
+   "note": {
+    "ru": "Священник Покровской церкви Углича (демо).",
+    "en": "Priest of the Intercession church in Uglich (demo)."
+   },
+   "media": []
+  },
+  {
+   "id": "ivan-chart",
+   "name": {
+    "ru": "Соколов Иван",
+    "en": "Sokolov Ivan"
+   },
+   "group": "historical",
+   "status": "chart_only",
+   "birth": "",
+   "death": "",
+   "note": {
+    "ru": "Отец Матвея по семейной схеме; ни отчества, ни дат на схеме нет.",
+    "en": "Matvey’s father on the family chart; the chart gives neither a patronymic nor dates."
+   },
+   "media": []
+  },
+  {
+   "id": "ivan-1858",
+   "name": {
+    "ru": "Иван Петров Соколов (ревизская сказка 1858)",
+    "en": "Ivan Petrov Sokolov (census of 1858)"
+   },
+   "group": "historical",
+   "status": "primary_document",
+   "birth": "ок. 1846",
+   "death": "",
+   "note": {
+    "ru": "Иван Петров, 12 лет, сын Петра Ильина — запись ревизской сказки 1858 года.",
+    "en": "Ivan Petrov, 12, son of Pyotr Ilyin — an entry of the census of 1858."
+   },
+   "media": [],
+   "date_display": {
+    "birth": {
+     "text": {
+      "ru": "около 1846 — 12 лет в ревизской сказке 1858 года",
+      "en": "about 1846 — 12 in the census of 1858"
+     },
+     "short": "≈1846",
+     "refs": [
+      "C040"
+     ],
+     "source_ids": [
+      "D-3-2-40"
+     ]
+    }
+   }
+  }
+ ],
+ "claims": [
+  {
+   "id": "C001",
+   "person_id": "andrey",
+   "field": "name",
+   "value": {
+    "ru": "Соколов Андрей Павлович",
+    "en": "Sokolov Andrey Pavlovich"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C002",
+   "person_id": "andrey",
+   "field": "birth",
+   "value": "1990-03-12",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C003",
+   "person_id": "misha",
+   "field": "birth",
+   "value": "2015-09-01",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C004",
+   "person_id": "pavel",
+   "field": "birth",
+   "value": "1962-07-04",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C005",
+   "person_id": "irina",
+   "field": "birth",
+   "value": "1964-11-20",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C006",
+   "person_id": "nikolay",
+   "field": "birth",
+   "value": "1931-02-15",
+   "status": "primary_document",
+   "source_ids": [
+    "F-BIRTH-1931"
+   ],
+   "locator": {
+    "ru": "свидетельство о рождении",
+    "en": "birth certificate"
+   },
+   "note": ""
+  },
+  {
+   "id": "C007",
+   "person_id": "nikolay",
+   "field": "birth_place",
+   "value": {
+    "ru": "город Кашин",
+    "en": "the town of Kashin"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "F-BIRTH-1931"
+   ],
+   "locator": {
+    "ru": "свидетельство о рождении",
+    "en": "birth certificate"
+   },
+   "note": ""
+  },
+  {
+   "id": "C008",
+   "person_id": "nikolay",
+   "field": "death",
+   "value": "2004-08-03",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C009",
+   "person_id": "nikolay",
+   "field": "occupation",
+   "value": {
+    "ru": "инженер-механик на вагоностроительном заводе в Калинине (Твери)",
+    "en": "mechanical engineer at the railway car works in Kalinin (Tver)"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C010",
+   "person_id": "nikolay",
+   "field": "residence",
+   "value": {
+    "ru": "1958–2004: Калинин (Тверь)",
+    "en": "1958–2004: Kalinin (Tver)"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C011",
+   "person_id": "nikolay",
+   "field": "marriage",
+   "value": {
+    "ru": "1958-06-14, Калинин: брак с Зинаидой Петровной Беловой",
+    "en": "1958-06-14, Kalinin: marriage to Zinaida Petrovna Belova"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "F-MARRIAGE-1958"
+   ],
+   "locator": {
+    "ru": "свидетельство о браке",
+    "en": "marriage certificate"
+   },
+   "note": ""
+  },
+  {
+   "id": "C012",
+   "person_id": "zinaida",
+   "field": "birth",
+   "value": "1934-05-30",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C013",
+   "person_id": "zinaida",
+   "field": "death",
+   "value": "2011-01-12",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C014",
+   "person_id": "sergey",
+   "field": "birth",
+   "value": "1936-10-08",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C015",
+   "person_id": "sergey",
+   "field": "death",
+   "value": "1999-03-21",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C016",
+   "person_id": "sergey",
+   "field": "occupation",
+   "value": {
+    "ru": "учитель истории в Угличе",
+    "en": "history teacher in Uglich"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C017",
+   "person_id": "galina",
+   "field": "birth",
+   "value": "1938",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": "",
+   "decided_by": {
+    "by": "Андрей Павлович Соколов",
+    "date": "2025-11-10",
+    "note": {
+     "ru": "Семья помнит 1938 год со слов самой Галины Фёдоровны; 1939 год в чужом дереве ничем не подтверждён.",
+     "en": "Galina Fyodorovna herself gave 1938; the 1939 of another tree is not supported by anything."
+    }
+   }
+  },
+  {
+   "id": "C018",
+   "person_id": "galina",
+   "field": "death",
+   "value": "2015",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C019",
+   "person_id": "ivan",
+   "field": "birth",
+   "value": "1898-01-14",
+   "status": "primary_document",
+   "source_ids": [
+    "D-1-1-12"
+   ],
+   "locator": {
+    "ru": "л. 3 об., № 3",
+    "en": "fol. 3v, No. 3"
+   },
+   "note": {
+    "ru": "Дата по старому стилю.",
+    "en": "Old style date."
+   }
+  },
+  {
+   "id": "C020",
+   "person_id": "ivan",
+   "field": "baptism",
+   "value": {
+    "ru": "1898-01-15, Ильинская церковь села Кесова Гора",
+    "en": "1898-01-15, St Elijah church of the village of Kesova Gora"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "D-1-1-12"
+   ],
+   "locator": {
+    "ru": "л. 3 об., № 3",
+    "en": "fol. 3v, No. 3"
+   },
+   "note": ""
+  },
+  {
+   "id": "C021",
+   "person_id": "ivan",
+   "field": "death",
+   "value": {
+    "ru": "1942, погиб на Волховском фронте",
+    "en": "1942, killed on the Volkhov Front"
+   },
+   "status": "publication",
+   "source_ids": [
+    "P-KNIGA-PAMYATI"
+   ],
+   "locator": {
+    "ru": "т. 3, с. 112",
+    "en": "vol. 3, p. 112"
+   },
+   "note": ""
+  },
+  {
+   "id": "C022",
+   "person_id": "ivan",
+   "field": "military_event",
+   "value": {
+    "ru": "1941-08: призван Кашинским райвоенкоматом, рядовой",
+    "en": "1941-08: called up by the Kashin district military office, private"
+   },
+   "status": "publication",
+   "source_ids": [
+    "P-KNIGA-PAMYATI"
+   ],
+   "locator": {
+    "ru": "т. 3, с. 112",
+    "en": "vol. 3, p. 112"
+   },
+   "note": ""
+  },
+  {
+   "id": "C023",
+   "person_id": "ivan",
+   "field": "occupation",
+   "value": {
+    "ru": "плотник, как отец",
+    "en": "carpenter, like his father"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C024",
+   "person_id": "anna",
+   "field": "birth",
+   "value": "1902",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C025",
+   "person_id": "anna",
+   "field": "death",
+   "value": "1980-06-02",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C026",
+   "person_id": "maria",
+   "field": "birth",
+   "value": "1928",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C027",
+   "person_id": "petr",
+   "field": "occupation",
+   "value": {
+    "ru": "бакенщик на Волге под Угличем",
+    "en": "buoy keeper on the Volga near Uglich"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C028",
+   "person_id": "alexey",
+   "field": "birth",
+   "value": "1903-03-17",
+   "status": "unverified_tree",
+   "source_ids": [
+    "T-TREE"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C029",
+   "person_id": "alexey",
+   "field": "occupation",
+   "value": {
+    "ru": "счетовод",
+    "en": "bookkeeper"
+   },
+   "status": "unverified_tree",
+   "source_ids": [
+    "T-TREE"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C030",
+   "person_id": "matvey",
+   "field": "death",
+   "value": {
+    "ru": "1925-11-02, деревня Пески",
+    "en": "1925-11-02, the village of Peski"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "D-2-1-7"
+   ],
+   "locator": {
+    "ru": "л. 18, № 41",
+    "en": "fol. 18, No. 41"
+   },
+   "note": ""
+  },
+  {
+   "id": "C031",
+   "person_id": "matvey",
+   "field": "age_in_record",
+   "value": {
+    "ru": "57 лет на 02.11.1925",
+    "en": "57 years on 02.11.1925"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "D-2-1-7"
+   ],
+   "locator": {
+    "ru": "л. 18, № 41",
+    "en": "fol. 18, No. 41"
+   },
+   "note": ""
+  },
+  {
+   "id": "C032",
+   "person_id": "matvey",
+   "field": "occupation",
+   "value": {
+    "ru": "крестьянин деревни Пески, плотник",
+    "en": "peasant of the village of Peski, carpenter"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "D-1-1-12",
+    "D-2-1-7"
+   ],
+   "locator": {
+    "ru": "метрика 1898; запись о смерти 1925",
+    "en": "register of 1898; death record of 1925"
+   },
+   "note": ""
+  },
+  {
+   "id": "C033",
+   "person_id": "grigory",
+   "field": "birth",
+   "value": "1872",
+   "status": "publication",
+   "source_ids": [
+    "P-ZHITIYA"
+   ],
+   "locator": {
+    "ru": "с. 45",
+    "en": "p. 45"
+   },
+   "note": ""
+  },
+  {
+   "id": "C034",
+   "person_id": "grigory",
+   "field": "ordination",
+   "value": {
+    "ru": "1898: рукоположён во священника к Покровской церкви Углича",
+    "en": "1898: ordained priest to the Intercession church of Uglich"
+   },
+   "status": "publication",
+   "source_ids": [
+    "P-ZHITIYA"
+   ],
+   "locator": {
+    "ru": "с. 45",
+    "en": "p. 45"
+   },
+   "note": ""
+  },
+  {
+   "id": "C035",
+   "person_id": "grigory",
+   "field": "arrest",
+   "value": {
+    "ru": "1937-10-02, Углич",
+    "en": "1937-10-02, Uglich"
+   },
+   "status": "index_record",
+   "source_ids": [
+    "I-UKAZATEL"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C036",
+   "person_id": "grigory",
+   "field": "sentence",
+   "value": {
+    "ru": "1937-11-15: приговорён тройкой УНКВД к расстрелу",
+    "en": "1937-11-15: sentenced to be shot by an NKVD troika"
+   },
+   "status": "index_record",
+   "source_ids": [
+    "I-UKAZATEL"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C037",
+   "person_id": "grigory",
+   "field": "death",
+   "value": {
+    "ru": "1937-11-20, расстрелян",
+    "en": "1937-11-20, shot"
+   },
+   "status": "index_record",
+   "source_ids": [
+    "I-UKAZATEL"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C038",
+   "person_id": "grigory",
+   "field": "rehabilitation",
+   "value": "1989",
+   "status": "index_record",
+   "source_ids": [
+    "I-UKAZATEL"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C039",
+   "person_id": "grigory",
+   "field": "canonization",
+   "value": {
+    "ru": "2000: причислен к лику новомучеников (в этом демо-примере)",
+    "en": "2000: glorified among the New Martyrs (in this demo)"
+   },
+   "status": "publication",
+   "source_ids": [
+    "P-ZHITIYA"
+   ],
+   "locator": {
+    "ru": "с. 47",
+    "en": "p. 47"
+   },
+   "note": ""
+  },
+  {
+   "id": "C040",
+   "person_id": "ivan-1858",
+   "field": "mention",
+   "value": {
+    "ru": "1858: «Сын его Иван Петров», 12 лет, в семье Петра Ильина Соколова, деревня Пески",
+    "en": "1858: «His son Ivan Petrov», 12, in the family of Pyotr Ilyin Sokolov, the village of Peski"
+   },
+   "status": "primary_document",
+   "source_ids": [
+    "D-3-2-40"
+   ],
+   "locator": {
+    "ru": "л. 5 об., № 7",
+    "en": "fol. 5v, No. 7"
+   },
+   "note": ""
+  },
+  {
+   "id": "C041",
+   "person_id": "ivan-1858",
+   "field": "identification",
+   "value": {
+    "ru": "Вероятно, отец Матвея Ивановича — тот «Иван Соколов», что на семейной схеме: та же деревня, фамилия и подходящий возраст; других Иванов в деревне нет",
+    "en": "Probably the father of Matvey Ivanovich — the «Ivan Sokolov» of the family chart: the same village, surname and a fitting age; there is no other Ivan in the village"
+   },
+   "status": "inference",
+   "source_ids": [
+    "D-3-2-40",
+    "F-CHART",
+    "R-MATVEY"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C042",
+   "person_id": "ivan-chart",
+   "field": "name",
+   "value": {
+    "ru": "Иван Соколов",
+    "en": "Ivan Sokolov"
+   },
+   "status": "chart_only",
+   "source_ids": [
+    "F-CHART"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C043",
+   "person_id": "galina",
+   "field": "birth",
+   "value": "1939",
+   "status": "unverified_tree",
+   "source_ids": [
+    "T-TREE"
+   ],
+   "locator": "",
+   "note": {
+    "ru": "Так в чужом дереве; семья помнит 1938 год.",
+    "en": "So in another tree; the family remembers 1938."
+   }
+  },
+  {
+   "id": "C044",
+   "person_id": "irina",
+   "field": "name",
+   "value": {
+    "ru": "Соколова (Вершинина) Ирина Сергеевна",
+    "en": "Sokolova (Vershinina) Irina Sergeevna"
+   },
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C045",
+   "person_id": "matvey",
+   "field": "birth",
+   "value": {
+    "ru": "около 1868 (57 лет в записи о смерти 1925 года)",
+    "en": "about 1868 (57 years old in the death record of 1925)"
+   },
+   "status": "inference",
+   "source_ids": [
+    "D-2-1-7"
+   ],
+   "locator": {
+    "ru": "л. 18, № 41",
+    "en": "fol. 18, No. 41"
+   },
+   "note": ""
+  },
+  {
+   "id": "C046",
+   "person_id": "petr",
+   "field": "birth",
+   "value": "1905",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "locator": "",
+   "note": ""
+  },
+  {
+   "id": "C047",
+   "person_id": "alexey",
+   "field": "death",
+   "value": "1960",
+   "status": "unverified_tree",
+   "source_ids": [
+    "T-TREE"
+   ],
+   "locator": "",
+   "note": ""
+  }
+ ],
+ "relationships": [
+  {
+   "id": "R001",
+   "from_id": "pavel",
+   "to_id": "andrey",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R002",
+   "from_id": "irina",
+   "to_id": "andrey",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R003",
+   "from_id": "andrey",
+   "to_id": "misha",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R004",
+   "from_id": "pavel",
+   "to_id": "irina",
+   "kind": "spouse",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R005",
+   "from_id": "nikolay",
+   "to_id": "pavel",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R006",
+   "from_id": "zinaida",
+   "to_id": "pavel",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R007",
+   "from_id": "nikolay",
+   "to_id": "zinaida",
+   "kind": "spouse",
+   "status": "primary_document",
+   "source_ids": [
+    "F-MARRIAGE-1958"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R008",
+   "from_id": "sergey",
+   "to_id": "irina",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R009",
+   "from_id": "galina",
+   "to_id": "irina",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R010",
+   "from_id": "sergey",
+   "to_id": "galina",
+   "kind": "spouse",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R011",
+   "from_id": "ivan",
+   "to_id": "nikolay",
+   "kind": "parent",
+   "status": "primary_document",
+   "source_ids": [
+    "F-BIRTH-1931"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R012",
+   "from_id": "anna",
+   "to_id": "nikolay",
+   "kind": "parent",
+   "status": "primary_document",
+   "source_ids": [
+    "F-BIRTH-1931"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R013",
+   "from_id": "ivan",
+   "to_id": "anna",
+   "kind": "spouse",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R014",
+   "from_id": "ivan",
+   "to_id": "maria",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R015",
+   "from_id": "anna",
+   "to_id": "maria",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R016",
+   "from_id": "petr",
+   "to_id": "zinaida",
+   "kind": "parent",
+   "status": "family_testimony",
+   "source_ids": [
+    "F-RASSKAZ"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R017",
+   "from_id": "alexey",
+   "to_id": "sergey",
+   "kind": "parent",
+   "status": "unverified_tree",
+   "source_ids": [
+    "T-TREE"
+   ],
+   "note": ""
+  },
+  {
+   "id": "R018",
+   "from_id": "grigory",
+   "to_id": "alexey",
+   "kind": "parent",
+   "status": "publication",
+   "source_ids": [
+    "P-ZHITIYA"
+   ],
+   "note": {
+    "ru": "В житии: «имел сына Алексея»; что это тот же Алексей Григорьевич — по семейной схеме.",
+    "en": "In the hagiography: «had a son Alexey»; that he is Alexey Grigoryevich comes from the family chart."
+   }
+  },
+  {
+   "id": "R019",
+   "from_id": "matvey",
+   "to_id": "ivan",
+   "kind": "parent",
+   "status": "primary_document",
+   "source_ids": [
+    "D-1-1-12"
+   ],
+   "note": {
+    "ru": "Метрика 1898, № 3: отец — Матвей Иванов Соколов.",
+    "en": "Parish register of 1898, No. 3: the father is Matvey Ivanov Sokolov."
+   }
+  },
+  {
+   "id": "R020",
+   "from_id": "ivan-chart",
+   "to_id": "matvey",
+   "kind": "parent",
+   "status": "chart_only",
+   "source_ids": [
+    "F-CHART"
+   ],
+   "note": ""
+  }
+ ],
+ "sources": [
+  {
+   "id": "F-RASSKAZ",
+   "title": {
+    "ru": "Рассказ Андрея Павловича Соколова, 2025",
+    "en": "Account of Andrey Pavlovich Sokolov, 2025"
+   },
+   "kind": "family_testimony",
+   "local_path": "sources/family/rasskaz-2025.md",
+   "download_status": "saved"
+  },
+  {
+   "id": "F-CHART",
+   "title": {
+    "ru": "Семейная схема Вершининых и Соколовых, около 1985 года",
+    "en": "Family chart of the Vershinins and Sokolovs, about 1985"
+   },
+   "kind": "family_chart",
+   "local_path": "sources/family/chart-1985.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "F-BIRTH-1931",
+   "title": {
+    "ru": "Свидетельство о рождении Николая Ивановича Соколова, Кашин, 1931",
+    "en": "Birth certificate of Nikolay Ivanovich Sokolov, Kashin, 1931"
+   },
+   "kind": "family_document",
+   "local_path": "sources/family/nikolay-birth-1931.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "F-MARRIAGE-1958",
+   "title": {
+    "ru": "Свидетельство о браке Николая и Зинаиды Соколовых, Калинин, 1958",
+    "en": "Marriage certificate of Nikolay and Zinaida Sokolov, Kalinin, 1958"
+   },
+   "kind": "family_document",
+   "local_path": "sources/family/marriage-1958.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "F-PHOTO-1955",
+   "title": {
+    "ru": "Николай Иванович Соколов, фото около 1955 года",
+    "en": "Nikolay Ivanovich Sokolov, photo of about 1955"
+   },
+   "kind": "historical_photo",
+   "local_path": "sources/family/nikolay-photo-1955.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "D-1-1-12",
+   "title": {
+    "ru": "Демо-архив 1-1-12: метрическая книга Ильинской церкви села Кесова Гора, 1898",
+    "en": "Demo archive 1-1-12: parish register of St Elijah church, Kesova Gora, 1898"
+   },
+   "kind": "archival_scan",
+   "local_path": "sources/archive/demo-1-1-12-l3ob.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "D-2-1-7",
+   "title": {
+    "ru": "Демо-архив 2-1-7: записи о смерти, Кесовогорский волисполком, 1925",
+    "en": "Demo archive 2-1-7: death records, Kesova Gora district office, 1925"
+   },
+   "kind": "archival_scan",
+   "local_path": "sources/archive/demo-2-1-7-l18.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "D-3-2-40",
+   "title": {
+    "ru": "Демо-архив 3-2-40: ревизская сказка деревни Пески, 1858",
+    "en": "Demo archive 3-2-40: census of the village of Peski, 1858"
+   },
+   "kind": "archival_scan",
+   "local_path": "sources/archive/demo-3-2-40-l5ob.jpg",
+   "download_status": "saved"
+  },
+  {
+   "id": "P-KNIGA-PAMYATI",
+   "title": {
+    "ru": "Книга памяти, т. 3, с. 112 (демо)",
+    "en": "Book of Remembrance, vol. 3, p. 112 (demo)"
+   },
+   "kind": "publication",
+   "local_path": "sources/publications/kniga-pamyati-t3.txt",
+   "download_status": "saved"
+  },
+  {
+   "id": "P-ZHITIYA",
+   "title": {
+    "ru": "Жития новомучеников, с. 45–47 (демо)",
+    "en": "Lives of the New Martyrs, pp. 45–47 (demo)"
+   },
+   "kind": "publication",
+   "local_path": "sources/publications/zhitiya-demo.txt",
+   "download_status": "saved"
+  },
+  {
+   "id": "I-UKAZATEL",
+   "title": {
+    "ru": "Указатель репрессированных: Вершинин Григорий Васильевич (демо)",
+    "en": "Index of the repressed: Vershinin Grigory Vasilyevich (demo)"
+   },
+   "kind": "index_record",
+   "local_path": "sources/publications/ukazatel-demo.txt",
+   "download_status": "saved"
+  },
+  {
+   "id": "T-TREE",
+   "title": {
+    "ru": "Чужое дерево в интернете: Вершинины (демо)",
+    "en": "Someone else’s tree online: the Vershinins (demo)"
+   },
+   "kind": "unverified_tree",
+   "url": "https://example.org/demo-tree/vershininy",
+   "download_status": "link"
+  },
+  {
+   "id": "R-MATVEY",
+   "title": {
+    "ru": "Кто отец Матвея Ивановича Соколова",
+    "en": "Who was the father of Matvey Ivanovich Sokolov"
+   },
+   "kind": "research_note",
+   "local_path": "sources/research/matvey-father.md",
+   "download_status": "saved"
+  }
+ ],
+ "conflicts": [
+  {
+   "id": "X01",
+   "title": {
+    "ru": "Год рождения Ивана Матвеевича",
+    "en": "Year of birth of Ivan Matveevich"
+   },
+   "people": [
+    "ivan"
+   ],
+   "source_ids": [
+    "D-1-1-12",
+    "P-KNIGA-PAMYATI"
+   ],
+   "detail": {
+    "ru": "Метрическая книга: родился 14 января 1898 года. Книга памяти: 1897 год рождения.",
+    "en": "Parish register: born 14 January 1898. Book of Remembrance: born 1897."
+   },
+   "resolution": {
+    "ru": "Нужна учётная карточка военкомата или запись в похозяйственной книге.",
+    "en": "A military registration card or an entry of a household book is needed."
+   },
+   "state": "open"
+  },
+  {
+   "id": "X02",
+   "title": {
+    "ru": "Год рождения Галины Фёдоровны",
+    "en": "Year of birth of Galina Fyodorovna"
+   },
+   "people": [
+    "galina"
+   ],
+   "source_ids": [
+    "F-RASSKAZ",
+    "T-TREE"
+   ],
+   "detail": {
+    "ru": "Семья помнит 1938 год, в чужом дереве — 1939.",
+    "en": "The family remembers 1938; another tree gives 1939."
+   },
+   "resolution": {
+    "ru": "Принят 1938 год, как говорила сама Галина Фёдоровна.",
+    "en": "1938 is accepted, as Galina Fyodorovna herself said."
+   },
+   "state": "resolved_by_decision",
+   "decided_by": {
+    "by": "Андрей Павлович Соколов",
+    "date": "2025-11-10",
+    "note": {
+     "ru": "Год рождения — со слов самой Галины Фёдоровны.",
+     "en": "The year of birth is in the words of Galina Fyodorovna herself."
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "title": {
+  "ru": "Соколовы и Вершинины",
+  "en": "The Sokolovs and the Vershinins"
+ },
+ "lang": "en",
+ "languages": [
+  "en",
+  "ru"
+ ],
+ "about": {
+  "ru": "Демонстрационная семья: все люди, документы и архивные шифры выдуманы. Цифры и стрелки ↗ в тексте ведут к фактам и документам.",
+  "en": "A demonstration family: all people, documents and archive references are invented. Numbers and arrows ↗ in the text lead to the facts and documents."
+ },
+ "branches": [
+  {
+   "id": "sokolovy",
+   "title": {
+    "ru": "Соколовы",
+    "en": "Sokolovs"
+   },
+   "head": "nikolay"
+  },
+  {
+   "id": "belovy",
+   "title": {
+    "ru": "Беловы",
+    "en": "Belovs"
+   },
+   "head": "zinaida"
+  },
+  {
+   "id": "vershininy",
+   "title": {
+    "ru": "Вершинины",
+    "en": "Vershinins"
+   },
+   "head": "sergey"
+  }
+ ],
+ "recipient": {
+  "ru": "составитель древа",
+  "en": "the keeper of the tree"
+ },
+ "contact": {
+  "ru": "Знаете больше? Напишите составителю древа: **demo@example.com**.",
+  "en": "Know more? Write to the keeper of the tree: **demo@example.com**."
+ },
+ "inbox_url": "",
+ "intro_video": "",
+ "intro_poster": "",
+ "source_url": "https://github.com/egnevushev/family-tree-site"
+}

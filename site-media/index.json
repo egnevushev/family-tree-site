@@ -1,0 +1,99 @@
+{
+ "D-1-1-12": {
+  "views": [
+   {
+    "file": "D-1-1-12.jpg",
+    "page": null,
+    "w": 2000,
+    "h": 1400,
+    "mid": "D-1-1-12.m.jpg"
+   }
+  ]
+ },
+ "D-2-1-7": {
+  "views": [
+   {
+    "file": "D-2-1-7.jpg",
+    "page": null,
+    "w": 2000,
+    "h": 1400,
+    "mid": "D-2-1-7.m.jpg"
+   }
+  ]
+ },
+ "D-3-2-40": {
+  "views": [
+   {
+    "file": "D-3-2-40.jpg",
+    "page": null,
+    "w": 2000,
+    "h": 1400,
+    "mid": "D-3-2-40.m.jpg"
+   }
+  ]
+ },
+ "F-BIRTH-1931": {
+  "views": [
+   {
+    "file": "F-BIRTH-1931.jpg",
+    "page": null,
+    "w": 1300,
+    "h": 1700,
+    "mid": "F-BIRTH-1931.m.jpg"
+   }
+  ]
+ },
+ "F-CHART": {
+  "views": [
+   {
+    "file": "F-CHART.jpg",
+    "page": null,
+    "w": 1600,
+    "h": 1100,
+    "mid": "F-CHART.m.jpg"
+   }
+  ]
+ },
+ "F-MARRIAGE-1958": {
+  "views": [
+   {
+    "file": "F-MARRIAGE-1958.jpg",
+    "page": null,
+    "w": 1300,
+    "h": 1700,
+    "mid": "F-MARRIAGE-1958.m.jpg"
+   }
+  ]
+ },
+ "F-PHOTO-1955": {
+  "views": [
+   {
+    "file": "F-PHOTO-1955.jpg",
+    "page": null,
+    "w": 900,
+    "h": 1200,
+    "mid": "F-PHOTO-1955.m.jpg"
+   }
+  ]
+ },
+ "F-RASSKAZ": {
+  "text": "F-RASSKAZ.txt",
+  "bytes": 1200
+ },
+ "I-UKAZATEL": {
+  "text": "I-UKAZATEL.txt",
+  "bytes": 454
+ },
+ "P-KNIGA-PAMYATI": {
+  "text": "P-KNIGA-PAMYATI.txt",
+  "bytes": 400
+ },
+ "P-ZHITIYA": {
+  "text": "P-ZHITIYA.txt",
+  "bytes": 661
+ },
+ "R-MATVEY": {
+  "text": "R-MATVEY.txt",
+  "bytes": 1004
+ }
+}

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f5f2e9">
+  <title>Семейное древо</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="Древо">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="#" id="home" aria-label="Семейное древо: к началу" title="К началу"><img class="monogram" src="icons/mark.svg" alt=""><span class="brand-text" id="brand-text">Семейное древо</span></a>
+  <nav class="groups" id="groups" aria-label="Ветки семьи"></nav>
+  <div class="search">
+    <input type="search" id="search" placeholder="Найти человека…" autocomplete="off" aria-label="Найти человека" aria-controls="results">
+    <div id="results" role="listbox" hidden></div>
+  </div>
+  <nav class="modes" id="modes" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button></nav>
+  <button class="legend-toggle help-toggle" id="help-toggle" aria-controls="panel" aria-label="Помочь дополнить"><span class="long">Помочь дополнить</span><span class="short">Помочь</span></button>
+  <button class="legend-toggle news-toggle" id="news-toggle" aria-controls="panel" aria-label="Что нового"><span class="long">Что нового</span><span class="short">Новое</span></button>
+  <button class="legend-toggle about-toggle" id="legend-toggle" aria-expanded="false" aria-controls="legend" aria-label="Что здесь есть и как читать линии" title="Что здесь есть и как читать линии">?</button>
+  <button class="legend-toggle lang-toggle" id="lang-toggle" hidden></button>
+</header>
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" hidden>
+  <div class="intro-box">
+    <button class="intro-close" id="intro-close" aria-label="Скрыть видео">×</button>
+    <h2 id="intro-title">Как пользоваться сайтом</h2>
+    <p>Видео на полторы минуты. Потом его всегда можно найти под «?» вверху справа.</p>
+    <video id="intro-video" controls playsinline preload="none"></video>
+    <div class="intro-foot"><button id="intro-hide">Скрыть</button></div>
+  </div>
+</div>
+<div class="me-ask" id="me-ask" role="alertdialog" aria-labelledby="me-ask-text" hidden><p id="me-ask-text"></p><div><button id="me-no">Нет</button><button id="me-yes">Да</button></div></div>
+<main id="stage">
+  <svg id="tree" role="application" aria-label="Семейное древо. Перетаскивайте для перемещения, колесо или щипок — масштаб. Нажмите на человека или линию.">
+    <g id="world"><g id="group-areas" aria-hidden="true"></g><g id="edges"></g><g id="path-overlay" aria-hidden="true"></g><g id="group-names"></g><g id="nodes"></g></g>
+  </svg>
+  <div class="zoom" aria-label="Масштаб">
+    <div class="zoom-pair"><button id="zoom-in" aria-label="Приблизить">+</button><button id="zoom-out" aria-label="Отдалить">−</button></div>
+    <div class="zoom-row"><button id="zoom-fit" aria-label="Вписать всё древо в экран" title="Вписать древо в экран"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5"/></svg></button><button id="print-toggle" class="print-toggle" aria-label="Напечатать схему на лист A3" title="Напечатать схему"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg></button></div>
+  </div>
+  <section id="legend" class="legend" hidden aria-label="Что здесь есть и как читать линии">
+    <button class="legend-close" id="legend-close" aria-label="Закрыть">×</button>
+    <h2 id="about-title">Семейное древо</h2>
+    <p class="about-lead" id="about-lead"></p>
+    <button class="intro-open" id="intro-open"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6 4.5v11l9-5.5z"/></svg>Видео: как пользоваться сайтом</button>
+    <ul class="about-list" id="about-list"></ul>
+    <h3>Насколько надёжна связь</h3>
+    <div id="legend-rows"></div>
+    <p class="legend-tail" id="legend-tail"></p>
+  </section>
+  <div class="focusbar" id="focusbar" hidden><span>Фокус: <strong id="focus-name"></strong> и его предки</span><button id="focus-exit">Всё древо</button></div>
+  <section class="page map-page" id="map-page" aria-label="Карта мест" hidden>
+    <div class="page-head"><h2>Карта мест</h2><button class="map-back" id="map-back" hidden>← Вся карта</button><button class="page-close" id="map-close" aria-label="Закрыть карту, вернуться к древу">К древу ×</button></div>
+    <div class="map-body"><div class="map-wrap" id="map-wrap"><svg id="map-svg" role="img" aria-label="Карта мест семьи. Перетаскивайте, колесо или щипок — масштаб."></svg><div class="map-zoom zoom-pair"><button data-map-zoom="in" aria-label="Приблизить карту">+</button><button data-map-zoom="out" aria-label="Отдалить карту">−</button></div></div><div class="map-list" id="map-list"></div></div>
+  </section>
+  <section class="page docs-page" id="docs-page" aria-label="Документы" hidden>
+    <div class="page-head"><h2>Документы</h2><div class="seg" role="group" aria-label="Как листать"><button data-docs-by="place" aria-pressed="true">По месту</button><button data-docs-by="year" aria-pressed="false">По годам</button></div><button class="page-close" id="docs-close" aria-label="Закрыть документы, вернуться к древу">К древу ×</button></div>
+    <nav class="docs-jump" id="docs-jump" aria-label="Разделы"></nav>
+    <div class="docs-body" id="docs-body"></div>
+  </section>
+  <section class="page book-page" id="book-page" aria-label="Книжка историй" hidden>
+    <div class="page-head"><h2>Книжка историй</h2><div class="pick" id="book-pick"><button class="pick-btn" id="book-scope" aria-haspopup="listbox" aria-expanded="false" aria-label="Чья книжка"><span id="book-scope-label"></span><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8l4.5 4.5L14.5 8"/></svg></button><div class="pick-list" id="book-scope-list" role="listbox" hidden></div></div><button class="book-print" id="book-print" aria-label="Напечатать книжку" title="Напечатать книжку"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg></button><button class="page-close" id="book-close" aria-label="Закрыть книжку, вернуться к древу">К древу ×</button></div>
+    <div class="book-body" id="book-body"></div>
+  </section>
+  <section class="page days-page" id="days-page" aria-label="В этот день" hidden>
+    <div class="page-head"><h2>В этот день</h2><button class="page-close" id="days-close" aria-label="Закрыть, вернуться к древу">К древу ×</button></div>
+    <div class="days-body" id="days-body"></div>
+  </section>
+  <div class="print-head" id="print-head" aria-hidden="true"></div>
+  <div class="print-legend" id="print-legend" aria-hidden="true"></div>
+  <button class="today-line" id="today-line" hidden></button>
+  <p class="hint" id="hint">Нажмите на человека — откроется его история, двойной клик — только его предки. Нажмите на линию — документы, на которых держится связь.</p>
+</main>
+<div class="panel-resize" id="panel-resize" role="separator" aria-orientation="vertical" aria-label="Ширина карточки: потяните; двойной клик — обычная ширина" title="Потяните, чтобы сделать карточку шире или уже. Двойной клик — обычная ширина" tabindex="0"></div>
+<nav class="modes modes-foot" id="modes-foot" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button></nav>
+<aside id="panel" aria-label="Карточка" tabindex="-1" data-state="closed">
+  <div class="panel-top">
+    <button class="grip" id="grip" aria-label="Развернуть или свернуть карточку"><span></span></button>
+    <div class="panel-head"><button class="back" id="back" hidden>← Назад</button><button class="expand-btn" id="expand-sheet" aria-label="Развернуть карточку на весь экран">⤢ Развернуть</button><button class="print-card" id="print-card" aria-label="Напечатать карточку" title="Напечатать карточку"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg></button><button class="close" id="close" aria-label="Закрыть карточку"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4.5 4.5l11 11M15.5 4.5l-11 11"/></svg></button></div>
+  </div>
+  <div id="panel-body"></div>
+</aside>
+<div id="viewer" role="dialog" aria-modal="true" aria-label="Документ" hidden>
+  <div class="viewer-bar">
+    <div class="viewer-title"><strong id="viewer-title"></strong><small id="viewer-sub"></small></div>
+    <div class="viewer-tools"><button id="viewer-prev" aria-label="Предыдущая страница">‹</button><span id="viewer-page"></span><button id="viewer-next" aria-label="Следующая страница">›</button><button id="viewer-close" aria-label="Закрыть документ">×</button></div>
+  </div>
+  <div class="viewer-stage" id="viewer-stage"><div id="viewer-sheet"></div></div>
+  <button class="viewer-doc prev" id="viewer-doc-prev" aria-label="Предыдущий документ" hidden><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 4l-6 6 6 6"/></svg></button>
+  <button class="viewer-doc next" id="viewer-doc-next" aria-label="Следующий документ" hidden><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4l6 6-6 6"/></svg></button>
+  <div class="viewer-foot" id="viewer-foot"></div>
+</div>
+<script src="vendor/dagre.min.js"></script><script src="data.js"></script><script src="app.js"></script>
+</body>
+</html>

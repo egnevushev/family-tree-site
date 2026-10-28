@@ -1,0 +1,54 @@
+{
+ "hypotheses": [
+  {
+   "id": "H01",
+   "kind": "possible_kin",
+   "title": {
+    "ru": "Иван Петров (сказка 1858) — Матвей",
+    "en": "Ivan Petrov (census of 1858) — Matvey"
+   },
+   "from_id": "ivan-1858",
+   "to_id": "matvey",
+   "claim_id": "C041",
+   "refs": [
+    "C040",
+    "C041",
+    "R020"
+   ],
+   "ref_labels": {
+    "C040": {
+     "ru": "Иван Петров в ревизской сказке 1858 года",
+     "en": "Ivan Petrov in the census of 1858"
+    },
+    "C041": {
+     "ru": "Почему это может быть отец Матвея",
+     "en": "Why he may be Matvey’s father"
+    },
+    "R020": {
+     "ru": "Иван → Матвей на семейной схеме",
+     "en": "Ivan → Matvey on the family chart"
+    }
+   },
+   "note": {
+    "ru": "На семейной схеме отец Матвея — просто «Иван Соколов». В ревизской сказке 1858 года по той же деревне есть Иван Петров подходящего возраста. Скорее всего, это один человек, но метрики о рождении Матвея пока нет.",
+    "en": "On the family chart Matvey’s father is just «Ivan Sokolov». The census of 1858 for the same village has an Ivan Petrov of a fitting age. Most likely they are one person, but there is no record of Matvey’s birth yet."
+   },
+   "label": {
+    "ru": "Возможное родство",
+    "en": "Possible kinship"
+   },
+   "caption": {
+    "ru": "возможно, отец",
+    "en": "possibly father"
+   },
+   "eyebrow": {
+    "ru": "Возможное родство · степень не установлена",
+    "en": "Possible kinship · degree not established"
+   },
+   "how": {
+    "ru": "Что Иван Петров из сказки и есть «Иван» со схемы — предположение. Карточки не объединены, родство на древе показано пунктиром, а не как отцовство.",
+    "en": "That Ivan Petrov of the census is the «Ivan» of the chart is an assumption. The cards are not merged; on the tree the kinship is dashed, not drawn as fatherhood."
+   }
+  }
+ ]
+}
