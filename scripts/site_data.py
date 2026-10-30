@@ -9,10 +9,11 @@ with references [C123], [R011], [X01] or [S:A88].
 Rules (README.md, «Rules the build checks»): a living child under 18 is shown by name and year only; the words of
 data/site-words.json stop the build outside quotes; «What's new» names no living person's birth date and
 has one entry per heading with its headline first; «Known personally» comes from data/site-personal.json; the
-page «Help fill in» takes its questions from data/site-questions.md. The settings of the site
-(title, branches, contacts) come from data/site.json.
-Texts of the data may be {"ru": …, "en": …}; a story, data/changelog.md and data/site-questions.md are written in
-the site's "lang", and <name>.<other lang>.md beside them is their translation. The site picks the reader's language.
+page «Help fill in» takes its questions from data/site-questions.md, the page «Finds» its finds from data/site-finds.md.
+The settings of the site (title, branches, contacts) come from data/site.json.
+Texts of the data may be {"ru": …, "en": …}; a story, data/changelog.md, data/site-questions.md and data/site-finds.md
+are written in the site's "lang", and <name>.<other lang>.md beside them is their translation. The site picks the
+reader's language.
 """
 import argparse
 import copy
@@ -293,6 +294,79 @@ def question_problems(data, questions, kids):
     return problems
 
 
+FIND = re.compile(r'## ([a-z0-9-]+): (.+)')
+# The keys may be written in Russian or in English.
+FIND_KEYS = {'Годы': 'years', 'Где': 'where', 'Люди': 'people', 'Документ': 'doc', 'Коротко': 'lead', 'Держится': 'weak',
+             'Years': 'years', 'Where': 'where', 'People': 'people', 'Document': 'doc', 'In short': 'lead', 'Rests on': 'weak'}
+
+
+def read_finds(path=ROOT / 'data/site-finds.md'):
+    """data/site-finds.md → [{id, title, years, where, people, doc, lead, weak, text}].
+
+    The page «Finds»: the most surprising finds, written by hand for the whole family. «## <id>: <title>», then lines
+    «Key: text», then after an empty line the paragraphs of the story. Text before the first «## » is for editors only."""
+    finds = []
+    for line in (path.read_text(encoding='utf-8').splitlines() if path.exists() else []):
+        line = line.rstrip()
+        if line.startswith('## '):
+            m = FIND.fullmatch(line)
+            finds.append(dict(id=m[1], title=m[2].strip(), years='', where='', people=[], doc='', lead='', weak='', text='')
+                         if m else dict(bad=line))
+            continue
+        if not finds or 'bad' in finds[-1]:
+            continue
+        f = finds[-1]
+        name, sep, value = line.partition(':')
+        if not f['text'] and sep and name in FIND_KEYS:
+            key = FIND_KEYS[name]
+            f[key] = [i.strip() for i in value.split(',') if i.strip()] if key == 'people' else value.strip()
+        else:
+            f['text'] += line + '\n'
+    for f in finds:
+        if 'text' in f:
+            f['text'] = f['text'].strip()
+    return finds
+
+
+def find_problems(data, finds, kids, media, where='data/site-finds.md'):
+    """«Finds» refer only to what exists, say nothing about children, and show a scan the site has."""
+    people = {p['id'] for p in data['people']}
+    claims = {c['id']: c for c in data['claims']}
+    records = set(claims) | {x['id'] for key in ('relationships', 'conflicts') for x in data[key]}
+    sources = {s['id']: s for s in data['sources']}
+    problems, seen = [], set()
+    for f in finds:
+        if 'bad' in f:
+            problems.append(f'{where}: unclear heading «{f["bad"]}» — «## <id>: <title>» is needed')
+            continue
+        name = f'{where}: find {f["id"]}'
+        if f['id'] in seen:
+            problems.append(f'{name} repeats')
+        seen.add(f['id'])
+        problems += [f'{name}: no line «{label}:»' for label, key in list(FIND_KEYS.items())[6:] if key not in ('weak', 'doc') and not f[key]]
+        if not f['text']:
+            problems.append(f'{name}: no story after the lines «Key: text»')
+        problems += [f'{name}: no person {i}' for i in f['people'] if i not in people]
+        problems += [f'{name}: {i} is a child under 18 — of children the site shows only the name and year' for i in f['people'] if i in kids]
+        # The scan beside a find: a cited source of that claim with published page images (site-media/).
+        if f['doc'] and not any(media.get(s, {}).get('views') for s in claims.get(f['doc'], {}).get('source_ids', [])):
+            problems.append(f'{name}: «Document:» needs a C… of the database whose source has an image, not {f["doc"]}')
+        for ref in REF.findall(' '.join([f['lead'], f['weak'], f['text']])):
+            if (ref[2:] not in sources) if ref.startswith('S:') else (ref not in records):
+                problems.append(f'{name}: no such reference [{ref}]')
+    return problems
+
+
+def find_translation_problems(base, other, where):
+    """A translation of «Finds» holds the same finds as the main file, with the same people, years and document."""
+    key = lambda fs: {f['id']: (f['people'], f['doc'], re.findall(r'\d{4}', f['years'])) for f in fs if 'bad' not in f}
+    a, b = key(base), key(other)
+    problems = [f'{where}: find {i} is missing' for i in a if i not in b]
+    problems += [f'{where}: find {i} is not in the main file' for i in b if i not in a]
+    problems += [f'{where}: find {i} — «People:», «Document:» or «Years:» differ from the main file' for i in a if i in b and a[i] != b[i]]
+    return problems
+
+
 def payload(data=None, today=None):
     # The site's view of the canon; the canon itself (build.py's copy) stays untouched.
     data = copy.deepcopy(data or load_canon())
@@ -391,6 +465,14 @@ def payload(data=None, today=None):
         problems += [p if lang == base else f'[{lang}] {p}' for p in question_problems(data, qs, kids)]
         qs.pop('bad', None)
     questions = by_lang[base] if len(by_lang) == 1 else by_lang
+    finds_by_lang = languages(ROOT / 'data/site-finds.md', read_finds) or {base: []}
+    for lang, fs in finds_by_lang.items():
+        where = 'data/site-finds.md' if lang == base else f'data/site-finds.{lang}.md'
+        problems += [p if lang == base else f'[{lang}] {p}' for p in find_problems(data, fs, kids, media, where)]
+        if lang != base:
+            problems += find_translation_problems(finds_by_lang[base], fs, where)
+        fs[:] = [f for f in fs if 'bad' not in f]
+    finds = finds_by_lang[base] if len(finds_by_lang) == 1 else finds_by_lang
     news_by_lang = languages(ROOT / 'data/changelog.md', read_changelog) or {base: []}
     changelog = news_by_lang[base] if len(news_by_lang) == 1 else news_by_lang
     news_text = '\n'.join(t for entries in news_by_lang.values() for e in entries
@@ -412,6 +494,7 @@ def payload(data=None, today=None):
     own += [('merge:' + m['id'], ' '.join(str(m.get(k, '')) for k in ('name', 'note', 'years'))) for m in merges]
     own += [('question:' + q['id'], ' '.join([q['title'], q['known'], q['missing'], q['help']])) for qs in by_lang.values() for q in qs['main']]
     own += [('question:' + x['id'], x['ask']) for qs in by_lang.values() for x in qs['conflicts']]
+    own += [('find:' + f['id'], ' '.join([f['title'], f['where'], f['lead'], f['weak'], f['text']])) for fs in finds_by_lang.values() for f in fs]
     canon = canon_texts(data, cited)
     hits, soft, stale = word_hits(own + canon, rules)
     in_canon = lambda place: place.split(':')[0] in ('person', 'claim', 'relationship', 'conflict', 'source')
@@ -461,6 +544,7 @@ def payload(data=None, today=None):
     out['merges'] = merges
     out['changelog'] = changelog
     out['questions'] = questions
+    out['finds'] = finds
     out['places'] = places
     out['map_base'] = map_base
     out['site'] = site

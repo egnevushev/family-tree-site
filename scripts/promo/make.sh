@@ -12,7 +12,7 @@ LANG_SITE=${1:-en}
 WORK=tmp/promo
 FRAMES=$WORK/frames-$LANG_SITE
 OUT=site-media/intro-$LANG_SITE.mp4
-SCENES="title card line branches map docs book days help me end"
+SCENES="title card line branches map docs finds book days help me end"
 FADE=0.5
 MUSIC=${MUSIC:-scripts/promo/music.m4a}
 mkdir -p "$WORK/clips-$LANG_SITE" site-media

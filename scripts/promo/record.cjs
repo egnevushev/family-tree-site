@@ -195,6 +195,17 @@ const PREP = {
     await s.wait(500);
   },
   branches: s => s.page.evaluate(() => fit()),
+  // The finds page draws its cards and scans on first open; opening it once beforehand keeps the recorded jump smooth.
+  finds: async s => {
+    await s.page.evaluate(() => go({page: 'finds'}));
+    await s.wait(600);
+    // Lazy images off screen never decode, so the wait is capped.
+    await s.page.evaluate(() => Promise.race([new Promise(r => setTimeout(r, 2500)),
+      Promise.all([...document.querySelectorAll('#finds-body img')].map(i => i.decode().catch(() => {})))]));
+    await s.page.evaluate(() => go({}));
+    await s.page.evaluate(() => centerOn('matvey', 0.8));
+    await s.wait(500);
+  },
   book: async s => {
     await s.page.evaluate(() => go({p: 'ivan'}));
     await s.wait(900);
@@ -271,6 +282,18 @@ const SCENES = {
     await s.wheel(500, 900);
     await s.click('[data-docs-by="year"]', 700);
     await s.wait(1300);
+  },
+  // «Finds»: the page, a bar on the time ribbon opens one find, then a few lines of it.
+  async finds(s) {
+    await s.cap(T('«Finds» — the most surprising things from the archives', '«Находки» — самое неожиданное из архивов'), T('The ribbon shows when it happened; click, and the find opens', 'На шкале — когда это было; нажмите, и находка раскроется'));
+    await s.click('#modes [data-mode="finds"]', 800);
+    await s.wait(1300);
+    await s.click('[data-find-go="volkhov"]', 900);
+    await s.wait(1200);
+    await s.cap(T('Every find rests on documents', 'Каждая находка — по документам'), T('numbers in the text lead to the facts, names to the people’s cards', 'цифры в тексте ведут к фактам, имена — к карточкам людей'));
+    await s.move('#finds-body', 400);
+    await s.wheel(220, 1000);
+    await s.wait(1600);
   },
   async book(s) {
     await s.cap(T('A book of stories — to read and to print', 'Книжка историй — можно прочитать и распечатать'));

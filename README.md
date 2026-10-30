@@ -13,6 +13,8 @@ What it does:
 - **hypotheses**: possible kinship drawn dashed, never mixed with what is proven;
 - **«This is me» and «How related»**: the kinship of any two people;
 - **map of places**, **all documents** by place and by year, **«On this day»**;
+- **finds**: the most surprising things from the archives on a ribbon of years; a find opens in place beside its scan, can be shared by link, and once the reader has pressed «This is me» every name in it says how that person is related to them;
+- **«new» dots**, kept in each reader's browser: on a find not read yet (and «updated» on one rewritten since), on a person whose life story is new or rewritten since the reader's first visit, on the Finds button and on «What's new»;
 - **book of stories** and printing the tree on A3;
 - **«What's new»** and **«Help fill in»** — questions to the family;
 - **a short video** about the site, shown at the first visit and under «?», in each language;
@@ -36,13 +38,13 @@ python3 scripts/serve.py         # http://127.0.0.1:8765/app/
 
 The demo files refer to demo people, so replacing `family.json` alone will not work: the build stops at the first foreign reference. Do it in this order:
 
-1. Delete `data/stories/*`, `data/site-evidence.json`, `data/site-hypotheses.json`, `data/site-places.json`, `data/site-questions*.md`, `data/changelog*.md`, `data/site-personal.json`.
+1. Delete `data/stories/*`, `data/site-evidence.json`, `data/site-hypotheses.json`, `data/site-places.json`, `data/site-questions*.md`, `data/site-finds*.md`, `data/changelog*.md`, `data/site-personal.json`.
 2. Delete `sources/*` and `site-media/*`.
 3. Write your own `data/family.json` (format below; `root_person_id` is where the tree opens) and edit `data/site.json`: title, text, branches with `head` set to ids of your own people. A branch whose `head` does not exist quietly disappears.
 4. Put your files into `sources/` and run `python3 scripts/build_media.py`, then `python3 scripts/build.py`.
 5. Keep the base map as it is (Eastern Europe) or rebuild it for your places (see «Map»).
 
-Then bring back what you need one by one: stories, places, boxes on scans, questions.
+Then bring back what you need one by one: stories, places, boxes on scans, questions, finds.
 
 **About privacy.** Everything in `data/`, `app/data.js` and `site-media/` is visible on the site. There is no password. If you publish it openly, first decide what may be shown about living people. If the repository is public, keep your data in a private copy.
 
@@ -54,6 +56,7 @@ data/site.json            settings: title, «About» text, branches, contacts, l
 data/stories/<id>.md      life stories (only facts with references [C…] [R…] [X…] [S:…])
 data/changelog.md         «What's new»
 data/site-questions.md    «Help fill in»
+data/site-finds.md        «Finds»
 data/site-places.json     places for the map
 data/site-evidence.json   PDF pages and boxes on scans
 data/site-hypotheses.json possible kinship
@@ -68,7 +71,7 @@ app/                      the site itself (HTML, CSS, JS, no frameworks)
 
 `app/data.js` and `site-media/` are generated; do not edit them by hand.
 
-All optional files can be deleted: the site does without stories, places, hypotheses and questions.
+All optional files can be deleted: the site does without stories, places, hypotheses, questions and finds (without finds the switch has no fourth button).
 
 ## Languages
 
@@ -84,7 +87,7 @@ The site speaks English and Russian. The reader switches with the EN/RU button i
  "locator": {"en": "vol. 3, p. 112", "ru": "т. 3, с. 112"}, "...": "..."}
 ```
 
-- Stories, `changelog.md` and `site-questions.md` are written in the site's `lang`; a translation lies beside them as `<name>.<lang>.md`: `stories/ivan.md` and `stories/ivan.ru.md`, `changelog.md` and `changelog.ru.md`. The front matter (`written`, `checked`) is read from the main file; «What's new» entries use the same headings in both files.
+- Stories, `changelog.md`, `site-questions.md` and `site-finds.md` are written in the site's `lang`; a translation lies beside them as `<name>.<lang>.md`: `stories/ivan.md` and `stories/ivan.ru.md`, `changelog.md` and `changelog.ru.md`. The front matter (`written`, `checked`) is read from the main file; «What's new» entries use the same headings in both files, and a translation of the finds holds the same finds, with the same people, years and document.
 - Names are read into surname, given name and patronymic, Cyrillic or Latin («Sokolova (Belova) Zinaida Petrovna»), and a woman is told from a man by the patronymic or the surname ending. Where that fails, set `"sex": "f"` or `"m"` on the person. Other names are shown as written.
 - Town names of the base map come in both languages from Natural Earth.
 
@@ -197,7 +200,7 @@ A line is drawn by its weakest parent. Only a document raises a status. Matching
 - `intro_video` and `intro_poster` — the video about the site and its still, paths from `app/`, one per language. A new reader sees it once; later it is under «?». Leave them out and there is no video.
 - `source_url` — a link to the code of the site at the foot of «?». Point it at your own repository or leave it out.
 
-## Stories, «What's new», questions
+## Stories, «What's new», questions, finds
 
 A story is `data/stories/<person id>.md`:
 
@@ -211,14 +214,16 @@ Ivan Matveevich Sokolov was born on 14 January 1898… [C019][C020][R019]
 
 - `checked` — up to which numbers of facts, links and disagreements the story was checked. If newer facts about the person appear, `build.py` warns.
 - `**bold**` works.
-- The formats of `changelog.md` and `site-questions.md` are described at the top of the files themselves. The keys of questions may be Russian or English (`About:`, `Status:`, `Known:`, `Missing:`, `How to help:`, `## Disagreements`).
+- The formats of `changelog.md`, `site-questions.md` and `site-finds.md` are described at the top of the files themselves. The keys of questions may be Russian or English (`About:`, `Status:`, `Known:`, `Missing:`, `How to help:`, `## Disagreements`), and so may those of finds (`Years:`, `Where:`, `People:`, `Document:`, `In short:`, `Rests on:`).
+- A find is a short story for the whole family: `## <id>: <title>`, the key lines, then the paragraphs with references. The id is its address on the site (`#finds=<id>`). `Document:` is optional: a fact `C…` whose source has a scan in `site-media/`, shown beside the find.
 
 ## Rules the build checks
 
 - **Children under 18** (a year of birth, no date of death) are shown by name and year of birth only. The site has no stories, notes, full dates or questions about them.
 - **The living** — no date of death and born in 1930 or later, or listed in `site-personal.json`. Their full birth dates must not appear in «What's new».
-- **Words of `site-words.json`** outside quotes stop the build in stories, «What's new», hypotheses and questions. For example, kinship counted from the author («great-grandfather») when the whole family reads the site. Direct speech in «…» is not checked. The list may be empty.
+- **Words of `site-words.json`** outside quotes stop the build in stories, «What's new», hypotheses, questions and finds. For example, kinship counted from the author («great-grandfather») when the whole family reads the site. Direct speech in «…» is not checked. The list may be empty.
 - References `[C…]`, `[R…]`, `[X…]`, `[S:…]` must lead to existing records.
+- A find names only existing people and no child, and its `Document:` must have a scan on the site.
 
 ## Scans and boxes
 

@@ -126,6 +126,11 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 .node.on-path rect.card{stroke:var(--forest);stroke-width:2}
 
 .node.saint rect.card{fill:#fbf4e0;stroke:#b8913a;stroke-width:1.8}
+/* A story new or rewritten since the reader's last look: a dot in the card's corner; in the open card, a word. */
+.node .new-dot{fill:var(--amber);stroke:var(--panel);stroke-width:2;pointer-events:none}
+.story-new{color:var(--amber);font:500 13px/1 system-ui,-apple-system,sans-serif;margin-left:8px;vertical-align:middle;letter-spacing:0;text-transform:none}
+.story-new::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);margin-right:5px;vertical-align:middle}
+@media print{.node .new-dot{display:none}}
 .node.saint.selected rect.card{fill:#f6ecd0;stroke:#9a7426;stroke-width:2.6}
 .cross circle{fill:#fbf4e0;stroke:#b8913a;stroke-width:1.8}
 .cross path,.saint-plate path,.legend-cross path{fill:none;stroke:#a8822f;stroke-width:1.8;stroke-linecap:round}
@@ -474,6 +479,10 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 .page{position:absolute;inset:0;z-index:6;background:var(--paper);display:flex;flex-direction:column}
 .page[hidden]{display:none}
 body.page-open .hint,body.page-open .zoom,body.page-open .focusbar{display:none}
+/* The branches (and the reader's plate) steer only the tree: on a page they step aside, and a header that wraps
+   them onto a second row goes back to one row. */
+body.page-open .groups{display:none}
+@media (max-width:1179px){body.page-open{--bar:58px}}
 .page-head{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);flex:none}
 .page-head h2{font-size:20px}
 .page-head .page-close{margin-left:auto;font-size:13px}
@@ -701,7 +710,7 @@ body.page-open .hint,body.page-open .zoom,body.page-open .focusbar{display:none}
 .modes svg{flex:none}
 /* On a laptop the switch shows its signs only (the name is in the tooltip), and «Что нового» its short form */
 @media (min-width:761px) and (max-width:1439px){.news-toggle .long{display:none}.news-toggle .short{display:inline}}
-@media (min-width:761px) and (max-width:1599px){.bar .modes .long{display:none}.bar .modes button{padding:5px 10px}}
+@media (min-width:761px) and (max-width:1799px){.bar .modes .long{display:none}.bar .modes button{padding:5px 10px}}
 .modes button:hover{background:var(--soft)}
 .modes button[aria-pressed=true]{background:var(--forest);color:#fff}
 /* «В этот день»: a quiet line at the foot of the tree */
@@ -753,3 +762,91 @@ body.page-open .gh-float{display:none}
 @media (min-width:761px){body.panel-open .gh-float{right:calc(var(--panel-w) + 16px)}}
 @media (max-width:760px){body.panel-open .gh-float{display:none}#stage:has(.gh-float) .hint{right:66px}}
 @media print{.gh-float{display:none!important}}
+
+/* «Находки» (Finds): a ribbon of years, then one find after another; a find opens in place, its scan beside it */
+.finds-filter{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel);overflow-x:auto;scrollbar-width:none;min-width:0}
+.finds-filter::-webkit-scrollbar{display:none}
+.finds-filter button{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:4px 11px;font-size:13px;background:none;white-space:nowrap}
+.finds-filter button small{color:var(--muted);font-size:11.5px}
+.finds-filter button i{width:8px;height:8px;border-radius:50%;flex:none}
+.finds-filter button[aria-pressed=true]{background:var(--forest);color:#fff}
+.finds-filter button[aria-pressed=true] small{color:#dfe9e2}
+.finds-body{flex:1;overflow:auto;padding:0 16px 60px}
+.finds{max-width:860px;margin:0 auto}
+.finds-cover{padding:30px 0 6px}
+.finds-cover h1{font-size:40px;margin:2px 0 10px;letter-spacing:-.3px}
+.finds-cover p:not(.eyebrow){font-family:var(--serif);font-size:17px;line-height:1.55;margin:0 0 10px;max-width:640px}
+.finds-cover p.finds-me{font-family:var(--sans);font-size:13.5px;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:9px 12px}
+.finds-order{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel);margin:2px 0 6px}
+.finds-order button{border:0;border-radius:999px;padding:4px 12px;font-size:13px;background:none}
+.finds-order button[aria-pressed=true]{background:var(--forest);color:#fff}
+.ribbon{position:relative;margin:18px 0 10px;border-bottom:1px solid var(--line)}
+.ribbon-bar{position:absolute;height:10px;min-width:10px;padding:0;border:0;border-radius:5px;opacity:.55;transition:opacity .15s,transform .15s}
+.ribbon-bar:hover,.ribbon-bar.on{opacity:1;transform:scaleY(1.3)}
+.ribbon-ticks{position:absolute;left:0;right:0;bottom:-20px;height:18px}
+.ribbon-ticks span{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ribbon-ticks span:first-child{transform:none}
+.ribbon-ticks span:last-child{transform:translateX(-100%)}
+.find{display:grid;grid-template-columns:76px minmax(0,1fr) 190px;gap:0 22px;padding:26px 0;border-top:1px solid var(--line);scroll-margin-top:8px}
+.ribbon + .find{margin-top:30px}
+.find-years{font-family:var(--serif);color:var(--find-ink);text-align:right;padding-top:2px}
+.find-years b{display:block;font-weight:400;font-size:30px;line-height:1}
+.find-years span{display:block;font-size:14px;color:var(--muted);margin-top:4px}
+.find-years span::before{content:"— "}
+.find-where{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--find-ink);margin:0 0 6px;font-weight:600}
+.find h3{font-size:24px;margin:0 0 8px}
+.find-title{all:unset;cursor:pointer;font:inherit;color:var(--ink)}
+.find-title:hover{color:var(--find-ink)}
+/* Not read yet: a dot after the title; read before and rewritten since — the dot and «updated». */
+.find-last{white-space:nowrap}
+.find-new{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--amber);margin-left:10px;vertical-align:.1em}
+.find-new:not(:empty){width:auto;height:auto;border-radius:0;background:none;color:var(--amber);font:500 13px/1 system-ui,-apple-system,sans-serif;vertical-align:.1em}
+.find-new:not(:empty)::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);margin-right:5px;vertical-align:middle}
+.modes button[data-mode=finds]{position:relative}
+.modes button.unread::after{content:"";position:absolute;top:2px;right:3px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 2px var(--panel)}
+.find-title:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:3px}
+.find-lead{font-family:var(--serif);font-size:16.5px;line-height:1.5;color:#3d4c44;margin:0 0 12px}
+.find-full{font-family:var(--serif);font-size:16px;line-height:1.62;border-left:3px solid var(--find-ink);padding:2px 0 2px 16px;margin:4px 0 14px}
+.find-full p{margin:0 0 12px}
+.find-full .ref{font-family:var(--sans)}
+.find-weak{font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--muted);background:#f6ead9;border-radius:8px;padding:8px 11px}
+.find-weak b{color:#87561f;font-weight:600}
+.find-people{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.find-person{display:inline-flex;align-items:flex-start;gap:7px;text-align:left;border-radius:10px;padding:5px 10px;font-size:13px;line-height:1.3;max-width:100%}
+.find-person i{width:8px;height:8px;border-radius:50%;flex:none;margin-top:5px}
+.find-person small{display:block;color:var(--forest);font-size:11.5px}
+.find-foot{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+/* Quiet, so twenty of them do not outshout the text: the find's ink on white, a pill as large as before. */
+.find-more{font-size:14px;font-weight:600;color:var(--find-ink);background:var(--panel);border-color:var(--line);border-radius:999px;padding:8px 18px}
+.find-more::after{content:" ↓"}
+.find.open .find-more::after{content:" ↑"}
+.find-more:hover{background:var(--panel);border-color:var(--find-ink)}
+.find-link{font-size:14px;color:var(--muted);border-radius:999px;padding:8px 16px}
+.find-doc{display:flex;flex-direction:column;gap:6px;align-self:start;padding:6px;border-radius:10px;background:var(--panel);text-align:left;transform:rotate(1.2deg);box-shadow:0 6px 18px rgba(37,55,47,.10);transition:transform .2s}
+.find:nth-of-type(even) .find-doc{transform:rotate(-1.2deg)}
+.find-doc:hover{transform:rotate(0) scale(1.02)}
+.find-doc .crop,.find-doc img{display:block;width:100%;border-radius:6px;background-color:#eee8da;background-repeat:no-repeat;max-height:240px;object-fit:cover;object-position:top}
+.find-doc small{font-size:11px;line-height:1.3;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:760px){
+  .finds-page .page-head{flex-wrap:wrap;row-gap:8px}
+  .finds-page .page-head h2{order:1;flex:1 1 auto}
+  .finds-page .page-head .page-close{order:2}
+  .finds-page .finds-filter{order:3;flex:1 1 100%}
+  .finds-body{padding:0 12px 40px}
+  .finds-cover{padding-top:18px}
+  .finds-cover h1{font-size:32px}
+  .finds-cover p:not(.eyebrow){font-size:16px}
+  .find{grid-template-columns:minmax(0,1fr);padding:22px 0}
+  .find-years{display:none}
+  .find h3{font-size:21px}
+  .find-doc{order:3;flex-direction:row;align-items:center;transform:none!important;margin-top:4px}
+  .find-doc .crop,.find-doc img{width:92px;max-height:120px;flex:none}
+  .find-full{padding-left:12px}
+}
+@media print{.finds-page{display:none!important}}
+/* Four modes since «Finds»: on the narrowest one-row header the gaps and the mode buttons draw in a little,
+   so the search keeps its room with the reader's plate */
+@media (min-width:1180px) and (max-width:1279px){.bar{gap:10px}.bar .modes button{padding:5px 8px}}
+/* …and on a narrow tablet the name of the site gives way, so the first row (with the EN/RU switch) keeps one line
+   and the search its room; the logo still leads to the start */
+@media (min-width:761px) and (max-width:959px){.brand-text{display:none}}

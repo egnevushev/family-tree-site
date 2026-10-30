@@ -17,6 +17,10 @@ const L = (ru, en) => EN ? en : ru;
 const isLangText = v => !!v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length > 0 && Object.keys(v).every(k => k === 'ru' || k === 'en');
 const loc = v => isLangText(v) ? v[LANG] ?? v.ru ?? v.en : v;
 const localize = v => isLangText(v) ? loc(v) : Array.isArray(v) ? v.map(localize) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, localize(x)])) : v;
+// The texts in the site's own language ("lang"), kept before localizing: what is new to a reader is measured on
+// them, so switching the language never makes every story and find look rewritten.
+const baseText = v => isLangText(v) ? v[SITE.lang || 'en'] ?? v.en ?? v.ru : v;
+const BASE = {stories: D.stories || {}, finds: baseText(D.finds) || []};
 Object.assign(D, localize({...D, site: undefined}), {site: SITE});
 const P = new Map(D.people.map(p => [p.id, p]));
 const S = new Map(D.sources.map(s => [s.id, s]));
@@ -32,7 +36,8 @@ document.documentElement.lang = LANG;
 const STATIC_EN = {
   'Семейное древо': 'Family tree', 'Семейное древо: к началу': 'Family tree: back to the start', 'К началу': 'Back to the start',
   'Ветки семьи': 'Branches of the family', 'Найти человека…': 'Find a person…', 'Найти человека': 'Find a person', 'Режим': 'Mode',
-  'Древо': 'Tree', 'Карта': 'Map', 'Документы': 'Documents', 'Помочь дополнить': 'Help fill in', 'Помочь': 'Help',
+  'Древо': 'Tree', 'Карта': 'Map', 'Документы': 'Documents', 'Находки': 'Finds', 'Помочь дополнить': 'Help fill in', 'Помочь': 'Help',
+  'Ветка семьи': 'Branch of the family', 'Закрыть находки, вернуться к древу': 'Close the finds, back to the tree',
   'Что нового': "What's new", 'Новое': 'New', 'Что здесь есть и как читать линии': "What's here and how to read the lines",
   'Скрыть': 'Hide', 'Нет': 'No', 'Да': 'Yes',
   'Семейное древо. Перетаскивайте для перемещения, колесо или щипок — масштаб. Нажмите на человека или линию.': 'Family tree. Drag to move, wheel or pinch to zoom. Click a person or a line.',
@@ -740,6 +745,30 @@ function cardText(id, lifeText) {
   const top = lines.length > 1 ? 24 : lifeText ? 28 : 40;
   return lines.map((t, i) => `<text class="name" x="14" y="${top + i * 17}">${t}</text>`).join('') + yearsAt(lines.length > 1 ? 62 : 48);
 }
+// New stories for this reader: the browser keeps a hash of each card's story (with its merged records) as of the
+// reader's first visit and of every card opened since. A card whose story is new or rewritten after that has a dot in
+// its corner until it is opened; the open card then says «new» or «rewritten». The hash is of the site's own language.
+const textHash = s => { let h = 5381; for (const ch of s) h = (h * 33 ^ ch.charCodeAt(0)) >>> 0; return h.toString(36); };
+const storyHash = id => { const t = [id, ...(MERGE_OF.get(id)?.members || [])].map(r => baseText(BASE.stories[r]?.text) || '').join('\n'); return t.trim() ? textHash(t) : ''; };
+const storiesRead = (() => {
+  try {
+    const kept = localStorage.getItem('storiesRead');
+    if (kept) return JSON.parse(kept);
+    // A first visit: every story there is now counts as known, so only later ones are new.
+    const m = {}; for (const id of P.keys()) { const h = storyHash(id); if (h) m[id] = h; }
+    localStorage.setItem('storiesRead', JSON.stringify(m));
+    return m;
+  } catch (_) { return null; }
+})();
+const storyNew = id => { const h = storyHash(id); return !!storiesRead && !!h && storiesRead[id] !== h; };
+let storyTag = null;
+function storyRead(id) {
+  if (!storyNew(id)) return;
+  storyTag = {id, text: storiesRead[id] ? L('дописана', 'rewritten') : L('новая', 'new')};
+  storiesRead[id] = storyHash(id);
+  try { localStorage.setItem('storiesRead', JSON.stringify(storiesRead)); } catch (_) {}
+  document.querySelector(`#nodes [data-person="${CSS.escape(id)}"] .new-dot`)?.remove();
+}
 function draw(shown, lines) {
   // Weaker lines first so a shared stretch shows the stronger style on top.
   const order = lines.slice().sort((a, b) => level(a.best.status) - level(b.best.status));
@@ -749,9 +778,10 @@ function draw(shown, lines) {
     const p = P.get(id), {x, y} = pos.get(id);
     const age = MERGE_OF.has(id) ? '' : ageText(p);
     const lifeText = (MERGE_OF.has(id) ? (MERGE_OF.get(id).years || life(p)) : life(p)) + (age ? ' · ' + age : '');
-    const saint = canonized.has(id), badge = hiddenBadge(id, shown);
-    return `<g class="node${id === ROOT ? ' root' : ''}${saint ? ' saint' : ''}" data-person="${esc(id)}" transform="translate(${x},${y})" tabindex="0" role="button" aria-label="${esc(nameOf(id))} ${esc(lifeText)}${saint ? L(', прославлен Церковью', ', glorified by the Church') : ''}">
+    const saint = canonized.has(id), badge = hiddenBadge(id, shown), fresh = storyNew(id);
+    return `<g class="node${id === ROOT ? ' root' : ''}${saint ? ' saint' : ''}" data-person="${esc(id)}" transform="translate(${x},${y})" tabindex="0" role="button" aria-label="${esc(nameOf(id))} ${esc(lifeText)}${saint ? L(', прославлен Церковью', ', glorified by the Church') : ''}${fresh ? L(', новое в истории', ', new in the story') : ''}">
       <rect class="card" width="${W}" height="${H}" rx="10"/>
+      ${fresh ? `<circle class="new-dot" cx="3" cy="3" r="5.5"><title>${L('Новое в истории жизни', 'New in the life story')}</title></circle>` : ''}
       ${cardText(id, lifeText)}
       ${saint ? CROSS.replace('%X', W - 8) : ''}
       ${conflictFlag(id, badge)}${badge}${groupPills(id, shown)}
@@ -911,15 +941,21 @@ function kinOf(a, b) {
   return {steps, alt: steps !== any && any && any.length < steps.length ? any : null, weak: Math.min(...steps.map(s => level(s.rec.status))), term: kinTerm(steps, b) || inLawTerm(steps, a, b)};
 }
 // «Вам: двоюродный дед»; «Вам: вероятно, прадед» when a link of the chain is only probable. Opens the whole chain.
+// The words alone, for the line in a card and for the people of «Finds».
+function youText(id) {
+  id = cid(id);
+  if (!me || !inTree.has(id) || id === me) return '';
+  const kin = kinOf(me, id);
+  if (!kin) return '';
+  const {steps, weak, term} = kin, f = sexOf(id) === 'f', maybe = weak <= 2 ? L('вероятно, ', 'probably ') : '';
+  return term ? maybe + term : steps.some(s => s.move === 'K') ? L((f ? 'вероятная родственница' : 'вероятный родственник') + ', степень неизвестна', 'probable relative, degree unknown') : EN ? 'relative by marriage' : f ? 'родственница через брак' : 'родственник через брак';
+}
 function youLine(id) {
   id = cid(id);
   if (!me || !inTree.has(id)) return '';
   if (id === me) return `<p class="you">${L('Это вы', 'This is you')}</p>`;
-  const kin = kinOf(me, id);
-  if (!kin) return '';
-  const {steps, weak, term} = kin, f = sexOf(id) === 'f', maybe = weak <= 2 ? L('вероятно, ', 'probably ') : '';
-  const text = term ? maybe + term : steps.some(s => s.move === 'K') ? L((f ? 'вероятная родственница' : 'вероятный родственник') + ', степень неизвестна', 'probable relative, degree unknown') : EN ? 'relative by marriage' : f ? 'родственница через брак' : 'родственник через брак';
-  return `<p class="you">${L('Вам', 'To you')}: <button class="linklike" data-path-to="${esc(me)}~${esc(id)}">${esc(text)}</button></p>`;
+  const text = youText(id);
+  return text ? `<p class="you">${L('Вам', 'To you')}: <button class="linklike" data-path-to="${esc(me)}~${esc(id)}">${esc(text)}</button></p>` : '';
 }
 let pathPick = null;
 function pathView(key) {
@@ -1384,6 +1420,8 @@ $('about-list').innerHTML = (EN ? [
   ...GROUPS.length ? [['Branches', `Buttons at the top: ${GROUPS.map(g => g.title).join(', ')} — only that side of the family.`]] : [],
   ['«This is me» and «How related…»', 'Press «This is me» on your own card and the site will say how each person is related to you. «How related…» — the kinship of any two.'],
   ['Tree · Map · Documents', 'The switch at the top (at the bottom on a phone): the family tree, the map of places where they lived, served and studied, and all documents by place and year.'],
+  ...D.finds?.length ? [['Finds', 'The fourth button of the switch: the most surprising things from the archives, by year. Once you have pressed «This is me», every name says how the person is related to you, and the order «Closest to me» puts your nearest first.']] : [],
+  ['New since your visit', `A dot marks ${D.finds?.length ? 'a find you have not read yet, ' : ''}a card whose life story is new or rewritten since your first visit, and «What’s new» while it holds something you have not seen.`],
   ['«On this day»', 'A quiet line under the tree: what happened to the ancestors today and this month.'],
   ['Print', 'The printer in the corner of the tree prints it on A3, the printer in the head of a card prints the card.'],
   ['«Help fill in»', INBOX ? 'What we do not know. At the foot of every card you can send a photo or a correction.' : 'What we do not know and how to reach us.'],
@@ -1393,6 +1431,8 @@ $('about-list').innerHTML = (EN ? [
   ...GROUPS.length ? [['Ветки', `Кнопки вверху: ${GROUPS.map(g => g.title).join(', ')} — только эта сторона семьи.`]] : [],
   ['«Это я» и «Кем приходится…»', 'В своей карточке нажмите «Это я» — сайт будет писать, кем вам приходится каждый. «Кем приходится…» — родство любых двоих.'],
   ['Древо · Карта · Документы', 'Переключатель вверху (на телефоне — внизу): схема семьи, карта мест, где жили, служили и учились, и все документы по месту и году.'],
+  ...D.finds?.length ? [['Находки', 'Четвёртая кнопка переключателя: самое неожиданное из архивов, по годам. Если вы нажали «Это я», у каждого имени написано, кем человек вам приходится, а порядок «Ближе ко мне» ставит первыми ваших самых близких.']] : [],
+  ['Новое с вашего визита', `Точка отмечает ${D.finds?.length ? 'находку, которую вы ещё не читали, ' : ''}карточку, где история жизни появилась или дописана после вашего первого визита, и «Что нового», пока там есть невиденное.`],
   ['«В этот день»', 'Тихая строка внизу схемы: что было с предками сегодня и в этом месяце.'],
   ['Печать', 'Кнопка с принтером в углу схемы печатает схему на лист A3, значок принтера в шапке карточки — саму карточку.'],
   ['«Помочь дополнить»', INBOX ? 'Чего мы не знаем. Внизу каждой карточки можно прислать фото или уточнение.' : 'Чего мы не знаем и как с нами связаться.'],
@@ -1820,6 +1860,8 @@ function personView(id) {
   const p = P.get(id), m = MERGE_OF.get(id);
   current = {p: id};
   mark(id);
+  storyRead(id);
+  const tag = storyTag?.id === id ? ` <span class="story-new">${storyTag.text}</span>` : '';
   const dates = q => esc(([dateValue(q, 'birth'), dateValue(q, 'death')].filter(Boolean).join(' — ') || L('Даты неизвестны', 'Dates unknown')) + (ageText(q) ? ` (${ageText(q)})` : ''));
   const dateRefs = q => [...new Set(Object.values(q.date_display || {}).flatMap(d => d.refs))].map(ref => `<button class="ref r${C.has(ref) ? level(C.get(ref).status) : 2}" data-ref="${esc(ref)}" aria-label="${L('Основание даты', 'Ground of the date')} ${esc(ref)}">↗</button>`).join(' ');
   const portrait = [id, ...(m?.members || [])].map(x => portraitOf(P.get(x))).find(Boolean);
@@ -1851,7 +1893,7 @@ function personView(id) {
     rs.sort((a, b) => (a.to_id === rid ? -1 : 1) - (b.to_id === rid ? -1 : 1) || order[a.kind] - order[b.kind]);
     const ll = lifeLine(rid), llHtml = lifeLineHtml(ll), hasStory = !!D.stories[rid];
     return `
-    ${m ? `<h3 class="record-title">${i ? L('Другая запись', 'Other record') : L('Основная запись', 'Main record')}: ${esc(q.name)}</h3><p class="life">${dates(q)} ${dateRefs(q)}</p>${chip(q.status)}` : `<h3>${L('История жизни', 'Life story')}</h3>`}
+    ${m ? `<h3 class="record-title">${i ? L('Другая запись', 'Other record') : L('Основная запись', 'Main record')}: ${esc(q.name)}</h3><p class="life">${dates(q)} ${dateRefs(q)}</p>${chip(q.status)}` : `<h3>${L('История жизни', 'Life story')}${tag}</h3>`}
     <div class="story">${hasStory ? storyHtml(q) : storyHtml(q, llHtml, new Set(llHtml ? ll.flatMap(r => r.refs) : []))}</div>
     ${hasStory ? llHtml : ''}${i ? '' : placesLine(rid)}
     ${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}
@@ -1882,7 +1924,8 @@ function cardContents() {
   };
   body.querySelector('.card-actions')?.insertAdjacentHTML('afterend', `<nav class="contents" aria-label="${L('Разделы карточки', 'Sections of the card')}">${hs.map((h, i) => {
     h.dataset.section = i; const n = /История|Life story/.test(h.textContent) ? 0 : count(h);
-    return `<button data-section-to="${i}">${esc(h.textContent.replace(/:.*$/, ''))}${n ? ` <small>${n}</small>` : ''}</button>`;
+    const name = [...h.childNodes].filter(x => !x.classList?.contains('story-new')).map(x => x.textContent).join('').trim();
+    return `<button data-section-to="${i}">${esc(name.replace(/:.*$/, ''))}${n ? ` <small>${n}</small>` : ''}</button>`;
   }).join('')}</nav>`);
   syncContents();
 }
@@ -1978,10 +2021,10 @@ function refView(ref) {
 // ---------- Pages over the tree: the map of places ----------
 // A page covers the tree; cards open over it on the right (on a phone, as the sheet) and close back to it.
 let pageOpen = null;
-const PAGES = {map: 'map-page', docs: 'docs-page', book: 'book-page', days: 'days-page'};
+const PAGES = {map: 'map-page', docs: 'docs-page', book: 'book-page', days: 'days-page', finds: 'finds-page'};
 function setPage(name) {
-  name = name === 'map' && D.places?.length || ['docs', 'book', 'days'].includes(name) ? name : null;
-  if (name === pageOpen) { if (name === 'book') bookView(); return; }
+  name = name === 'map' && D.places?.length || ['docs', 'book', 'days'].includes(name) || name === 'finds' && FINDS.length ? name : null;
+  if (name === pageOpen) { if (name === 'book') bookView(); if (name === 'finds') findsView(); return; }
   pageOpen = name;
   Object.entries(PAGES).forEach(([k, el]) => { $(el).hidden = k !== name; });
   document.body.classList.toggle('page-open', !!name);
@@ -1990,6 +2033,7 @@ function setPage(name) {
   if (name === 'docs') docsView();
   if (name === 'book') bookView();
   if (name === 'days') { daysMonth = null; daysView(); }
+  if (name === 'finds') findsView();
   syncModes(); syncTodayLine();
 }
 // Leaving the page for the tree (a branch, the focus, «Кем приходится»): the link loses the page.
@@ -1999,10 +2043,10 @@ function leavePage() {
   const st = {...(history.state || {})}; delete st.page;
   history.replaceState(st, '', hashOf(st));
 }
-// The switch of modes: Древо, Карта, Документы; on a phone it is the bar at
+// The switch of modes: Древо, Карта, Документы, Находки; on a phone it is the bar at
 // the foot of the screen. «В этот день» is no mode: a quiet line at the foot of the tree opens it.
 function syncModes() {
-  const mode = pageOpen === 'map' || pageOpen === 'docs' ? pageOpen : pageOpen ? '' : 'tree';
+  const mode = ['map', 'docs', 'finds'].includes(pageOpen) ? pageOpen : pageOpen ? '' : 'tree';
   document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
 }
 // The header holds the switch on a computer; on a phone the same switch is a bar at the foot, outside the header.
@@ -2028,6 +2072,10 @@ PLACES.forEach(pl => pl.people.forEach(id => { if (!PLACES_OF.has(id)) PLACES_OF
 const MAPK = D.map_base?.projection?.k || Math.cos(55 * Math.PI / 180);
 const onMap = pl => pl.kind !== 'far' && typeof pl.lat === 'number';
 const proj = pl => [pl.lon * MAPK, -pl.lat];
+// The base covers only this box (lon0, lat0, lon1, lat1): the land is cut to it, so the coasts and borders are cut to
+// it on the screen too, and the map zooms out no further than the whole box.
+const MAPBOX = D.map_base?.projection?.box || [4, 40, 72, 74];
+const [boxX, boxY, boxW, boxH] = [MAPBOX[0] * MAPK, -MAPBOX[3], (MAPBOX[2] - MAPBOX[0]) * MAPK, MAPBOX[3] - MAPBOX[1]];
 const mapViews = [];  // the stack of zoomed views, each a list of place ids
 let mapView = {k: 1, tx: 0, ty: 0}, mapHand = false;  // the drawn view; mapHand: the reader moved or zoomed it
 let mapFocus = null;  // a place to show and mark (from a card)
@@ -2056,7 +2104,7 @@ function drawMap() {
   // On a phone the half-open card covers the lower part of the map: the view is fitted to the part above it.
   let Hh = full;
   if (narrow() && document.body.classList.contains('panel-open') && panel.dataset.state === 'peek') {
-    const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar')) || 94;
+    const bar = parseFloat(getComputedStyle(document.body).getPropertyValue('--bar')) || 94;
     Hh = Math.max(140, Math.min(full, innerHeight - (innerHeight - bar) * .48 - wrap.getBoundingClientRect().top - 8));
   }
   const all = PLACES.filter(onMap);
@@ -2073,12 +2121,14 @@ function drawMap() {
     return {k, tx: W / 2 - (x0 + x1) / 2 * k, ty: Hh / 2 - (y0 + y1) / 2 * k};
   };
   const kAll = fitTo(all, 0).k;
+  drawMap.kMin = Math.min(kAll, W / boxW, Hh / boxH);
   // A view set by the site (the whole map, a circle opened, a card's place) or moved by the reader's hand.
   if (!mapHand) mapView = fitTo(ids ? all.filter(pl => ids.includes(pl.id)) : all, mapFocus && ids?.length === 1 ? 2.2 : ids ? .22 : 0);
   const {k, tx, ty} = mapView;
   mapView.W = W; mapView.H = full;
-  // The places on the screen; a view of a circle shows only its places, until the reader moves it.
-  let inView = ids && !ids.auto && !mapHand ? all.filter(pl => ids.includes(pl.id)) : all.filter(pl => { const x = proj(pl)[0] * k + tx, y = proj(pl)[1] * k + ty; return x >= 8 && x <= W - 8 && y >= 8 && y <= Hh - 8; });
+  // The places on the screen, a circle's radius (12) and its line clear of the edge; a view of a circle shows only its
+  // places, until the reader moves it.
+  let inView = ids && !ids.auto && !mapHand ? all.filter(pl => ids.includes(pl.id)) : all.filter(pl => { const x = proj(pl)[0] * k + tx, y = proj(pl)[1] * k + ty; return x >= 14 && x <= W - 14 && y >= 14 && y <= Hh - 14; });
   const overview = drawMap.overview = k < kAll * 1.8;
   const at = pl => { const [x, y] = proj(pl); return [x * k + tx, y * k + ty]; };
   const base = D.map_base;
@@ -2128,7 +2178,7 @@ function drawMap() {
     taken.push(spot, [x - 3, y - 3, x + 3, y + 3]);
     towns.push({t, x, y, box: spot});
   }
-  svg.innerHTML = `<defs><radialGradient id="map-zone"><stop offset="0" stop-color="#2f5d47" stop-opacity=".16"/><stop offset=".6" stop-color="#2f5d47" stop-opacity=".07"/><stop offset="1" stop-color="#2f5d47" stop-opacity="0"/></radialGradient></defs><g id="map-all"><g class="map-base" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${k.toFixed(3)})">
+  svg.innerHTML = `<defs><clipPath id="map-box"><rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}"/></clipPath><radialGradient id="map-zone"><stop offset="0" stop-color="#2f5d47" stop-opacity=".16"/><stop offset=".6" stop-color="#2f5d47" stop-opacity=".07"/><stop offset="1" stop-color="#2f5d47" stop-opacity="0"/></radialGradient></defs><g id="map-all"><g class="map-base" clip-path="url(#map-box)" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${k.toFixed(3)})">
       <path class="land" d="${base?.land || ''}"/><path class="coast" d="${base?.coast || ''}"/><path class="frontier" d="${base?.frontiers || ''}"/><path class="lake" d="${base?.lakes || ''}"/>${rivers}${k > 40 && base?.borders ? `<path class="borders" d="${base.borders}"/>` : ''}</g>
     <g class="map-zones" aria-hidden="true">${groups.map(g => `<circle cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${g.members.length > 1 ? 44 : 30}"/>`).join('')}</g>
     <g class="map-towns" aria-hidden="true">${towns.map(({t, x, y, box}) => `<rect x="${(x - 2).toFixed(1)}" y="${(y - 2).toFixed(1)}" width="4" height="4"/><text x="${(box[0] + 1).toFixed(1)}" y="${(box[3] - 3.5).toFixed(1)}">${esc(t.n)}</text>`).join('')}</g>
@@ -2174,7 +2224,7 @@ const mapMove = () => { const {k, tx, ty} = mapView, g = mapGesture; $('map-svg'
   $('map-all')?.setAttribute('transform', `translate(${g.tx - tx * g.k / k},${g.ty - ty * g.k / k}) scale(${g.k / k})`); };
 function mapZoomAt(f, cx, cy) {
   const g = mapGesture || {...mapView};
-  const k = Math.max(4, Math.min(6000, g.k * f)), r = k / g.k;
+  const k = Math.max(drawMap.kMin || 4, Math.min(6000, g.k * f)), r = k / g.k;
   mapGesture = {k, tx: cx - (cx - g.tx) * r, ty: cy - (cy - g.ty) * r};
   mapMove();
 }
@@ -2591,6 +2641,138 @@ function syncTodayLine() {
 $('today-line').onclick = () => go({page: 'days'});
 syncTodayLine();
 
+// ---------- «Находки» (Finds): the most surprising finds ----------
+// Written by hand in data/site-finds.md (and its translation) for the whole family, with full names; who each person
+// is to the reader the site counts itself, once the reader said «This is me». A ribbon of years above; a find opens in
+// place, its scan beside it.
+const FINDS = D.finds || [];
+let findsBranch = '', findOpen = null, findsNear = false;
+// New for this reader: the browser keeps a hash of each find's text when the reader opens it (findsRead) and when the
+// page lists it (findsSeen). A find not opened, or rewritten since, has a dot; the «Finds» button has one, like
+// «What's new», while the page holds a find new or rewritten since the last visit. The hash is of the site's language.
+const FIND_BASE = new Map(BASE.finds.map(f => [f.id, f]));
+const findHash = f => { const b = FIND_BASE.get(f.id) || f; return textHash(b.title + b.lead + b.text + (b.weak || '')); };
+const findsStore = key => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (_) { return {}; } };
+function findsKeep(key, list) {
+  try { const m = findsStore(key); for (const f of list) m[f.id] = findHash(f); localStorage.setItem(key, JSON.stringify(m)); } catch (_) {}
+}
+function markFinds() {
+  const seen = findsStore('findsSeen'), on = FINDS.some(f => seen[f.id] !== findHash(f));
+  document.querySelectorAll('[data-mode="finds"]').forEach(b => { b.classList.toggle('unread', on); b.setAttribute('aria-label', on ? L('Находки — есть новое', 'Finds — something new') : L('Находки', 'Finds')); });
+}
+let findsRead = {};
+// How close a find is to the reader: the shortest chain from «This is me» to any of its people (for «Closest to me»).
+const findDistance = f => Math.min(...f.people.map(cid).map(id => id === me ? 0 : kinPath(me, id)?.length ?? 99));
+const findSpan = f => { const ys = (f.years.match(/\d{4}/g) || []).map(Number); return [ys[0] || 0, ys[ys.length - 1] || ys[0] || 0]; };
+const findBranches = f => new Set(f.people.map(cid).flatMap(id => [...(memberOf.get(id) || [])]));
+// The colour of a person's branch; someone outside every branch is drawn in the site's green.
+const inkOf = id => { const g = GROUP.get(homeOf.get(cid(id))); return g ? `var(--g-${g.c}-ink)` : 'var(--forest)'; };
+const findInk = f => inkOf(f.people[0]);
+function findDoc(f) {
+  const claim = C.get(f.doc), sid = claim?.source_ids.find(s => S.get(s)?.views?.length);
+  if (!sid) return '';
+  const v = viewsFor(S.get(sid), f.doc)[0];
+  return v ? `<button class="find-doc" data-doc="${esc(sid)}" data-citing="${esc(f.doc)}" aria-label="${L('Документ', 'Document')}: ${esc(S.get(sid).title)}">${thumb(v)}<small>${esc(S.get(sid).title)}</small></button>` : '';
+}
+function findPerson(id) {
+  id = cid(id);
+  if (!P.has(id)) return '';
+  const kin = youText(id), you = id === me ? L('Это вы', 'This is you') : kin ? `${L('Вам', 'To you')}: ${kin}` : '';
+  return `<button class="find-person" data-person-link="${esc(id)}"><i style="background:${inkOf(id)}" aria-hidden="true"></i><span>${esc(sayName(id))}${you ? `<small>${esc(you)}</small>` : ''}</span></button>`;
+}
+function findHtml(f) {
+  const [a, b] = findSpan(f), open = findOpen === f.id;
+  const text = refsIn(), was = findsRead[f.id], fresh = was !== findHash(f);
+  const dot = !fresh ? '' : was ? `<span class="find-new" title="${L('Дополнено после вашего чтения', 'Updated since you read it')}">${L('дополнено', 'updated')}</span>` : `<span class="find-new" title="${L('Вы ещё не читали', 'Not read yet')}"></span>`;
+  // The dot holds on to the title's last word, so a title that wraps never leaves it alone on a line of its own.
+  const words = f.title.split(' '), last = words.pop();
+  const title = dot ? `${esc(words.join(' '))}${words.length ? ' ' : ''}<span class="find-last">${esc(last)}${dot}</span>` : esc(f.title);
+  return `<article class="find${open ? ' open' : ''}${fresh ? ' unread' : ''}" id="find-${esc(f.id)}" data-find="${esc(f.id)}" style="--find-ink:${findInk(f)}">
+    <div class="find-years" aria-hidden="true"><b>${a}</b>${b !== a ? `<span>${b}</span>` : ''}</div>
+    <div class="find-main">
+      <p class="find-where">${esc(f.years)} · ${esc(f.where.split(/\s*,\s*/).join(' · '))}</p>
+      <h3><button class="find-title" data-find-toggle="${esc(f.id)}" aria-expanded="${open}">${title}</button></h3>
+      <p class="find-lead">${esc(f.lead)}</p>
+      <div class="find-foot"><button class="find-more" data-find-toggle="${esc(f.id)}" aria-expanded="${open}">${open ? L('Свернуть', 'Show less') : L('Читать находку', 'Read the find')}</button><button class="find-link" data-find-copy="${esc(f.id)}">${L('Поделиться', 'Share')}</button></div>
+      <div class="find-full"${open ? '' : ' hidden'}>
+        ${f.text.split(/\n\s*\n/).map(par => `<p>${text(par.trim())}</p>`).join('')}
+        ${f.weak ? `<p class="find-weak"><b>${L('На чём держится.', 'What it rests on.')}</b> ${text(f.weak)}</p>` : ''}
+      </div>
+      <div class="find-people">${f.people.map(findPerson).join('')}</div>
+    </div>
+    ${findDoc(f)}
+  </article>`;
+}
+// The ribbon: each find a bar over its years, in lanes so bars never overlap; ticks every fifty years.
+function findsRibbon(list) {
+  const spans = list.map(findSpan), lo = Math.floor(Math.min(...spans.map(s => s[0])) / 50) * 50, hi = Math.ceil((Math.max(...spans.map(s => s[1])) + 1) / 50) * 50;
+  const x = y => ((y - lo) / (hi - lo) * 100).toFixed(2) + '%';
+  const lanes = [], bars = list.map((f, i) => {
+    const [a, b] = spans[i], end = Math.max(b, a + (hi - lo) / 40);
+    let lane = lanes.findIndex(e => e < a - (hi - lo) / 80); if (lane < 0) { lane = lanes.length; lanes.push(0); }
+    lanes[lane] = end;
+    return `<button class="ribbon-bar${findOpen === f.id ? ' on' : ''}" data-find-go="${esc(f.id)}" style="left:${x(a)};width:calc(${x(end)} - ${x(a)});top:${lane * 14 + 4}px;background:${findInk(f)}" title="${esc(f.years)} — ${esc(f.title)}" aria-label="${esc(f.years)}: ${esc(f.title)}"></button>`;
+  });
+  const ticks = []; for (let y = lo; y <= hi; y += 50) ticks.push(`<span style="left:${x(y)}">${y}</span>`);
+  return `<div class="ribbon" style="height:${lanes.length * 14 + 26}px">${bars.join('')}<div class="ribbon-ticks">${ticks.join('')}</div></div>`;
+}
+function findsView() {
+  const branches = GROUPS.filter(g => FINDS.some(f => findBranches(f).has(g.id)));
+  if (findsBranch && !branches.some(g => g.id === findsBranch)) findsBranch = '';
+  const list = FINDS.filter(f => !findsBranch || findBranches(f).has(findsBranch));
+  if (me && findsNear) { const d = new Map(list.map(f => [f, findDistance(f)])); list.sort((a, b) => d.get(a) - d.get(b)); }
+  // The open find counts as read; the dots of the others stay until they are opened.
+  if (findOpen) findsKeep('findsRead', FINDS.filter(f => f.id === findOpen));
+  findsRead = findsStore('findsRead');
+  $('finds-filter').innerHTML = [['', L('Все', 'All'), FINDS.length], ...branches.map(g => [g.id, g.title, FINDS.filter(f => findBranches(f).has(g.id)).length])]
+    .map(([id, t, n]) => `<button data-finds-branch="${esc(id)}" aria-pressed="${id === findsBranch}">${id ? `<i style="background:var(--g-${GROUP.get(id).c}-ink)" aria-hidden="true"></i>` : ''}${esc(t)} <small>${n}</small></button>`).join('');
+  const meNote = me ? `<p class="finds-me">${L(`У каждого имени написано, кем человек приходится вам, ${esc(sayName(me))}. «Вероятно» — где в цепочке есть неподтверждённое звено.`, `Every name says how the person is related to you, ${esc(sayName(me))}. «Probably» means a link of the chain is not confirmed.`)}</p>`
+    : `<p class="finds-me">${L('Кем вам приходятся эти люди? Откройте на древе свою карточку и нажмите «Это я» — здесь у каждого имени появится родство.', 'How are these people related to you? Open your own card on the tree and press «This is me», and every name here will show the kinship.')}</p>`;
+  $('finds-body').innerHTML = `<div class="finds">
+    <header class="finds-cover"><p class="eyebrow">${esc(SITE_NAME)}</p><h1>${L('Находки', 'Finds')}</h1>
+      <p>${L('Самое неожиданное, что нашлось в архивах. Всё — по документам: цифры в тексте ведут к фактам, имена — к карточкам людей, картинка рядом — к скану.', 'The most surprising things the archives turned up. Everything rests on documents: the numbers in the text lead to the facts, the names to the people’s cards, the picture beside a find to its scan.')}</p>${meNote}</header>
+    ${me ? `<div class="finds-order" role="group" aria-label="${L('Порядок', 'Order')}"><button data-finds-near="" aria-pressed="${!findsNear}">${L('По времени', 'By time')}</button><button data-finds-near="1" aria-pressed="${findsNear}">${L('Ближе ко мне', 'Closest to me')}</button></div>` : ''}
+    ${list.length ? findsRibbon(list) : ''}
+    ${list.map(findHtml).join('') || `<p class="muted">${L('В этой ветке находок пока нет.', 'No finds in this branch yet.')}</p>`}
+  </div>`;
+  if (findOpen) requestAnimationFrame(() => { const el = $('find-' + findOpen); if (el) $('finds-body').scrollTop += el.getBoundingClientRect().top - $('finds-body').getBoundingClientRect().top - 8; });
+  findsKeep('findsSeen', list);
+  markFinds();
+}
+function toggleFind(id, only) {
+  findOpen = only || findOpen !== id ? id : null;
+  // The open find is in the link, so it can be sent; the list itself stays where it is.
+  const st = {...(history.state || {}), page: 'finds'}; if (findOpen) st.find = findOpen; else delete st.find;
+  history.replaceState(st, '', hashOf(st));
+  const top = $('finds-body').scrollTop;
+  findsView();
+  if (!only) $('finds-body').scrollTop = top;
+}
+$('finds-filter').addEventListener('click', e => { const b = e.target.closest('[data-finds-branch]'); if (!b) return; findsBranch = b.dataset.findsBranch; findsView(); $('finds-body').scrollTop = 0; });
+$('finds-body').addEventListener('click', e => {
+  const t = e.target.closest('[data-find-toggle],[data-find-go],[data-find-copy],[data-finds-near],[data-person-link],[data-ref],[data-doc]'); if (!t) return;
+  if (t.dataset.findsNear !== undefined) { findsNear = !!t.dataset.findsNear; findsView(); }
+  else if (t.dataset.findToggle) toggleFind(t.dataset.findToggle);
+  else if (t.dataset.findGo) toggleFind(t.dataset.findGo, t.dataset.findGo);
+  else if (t.dataset.findCopy) {
+    const url = location.href.split('#')[0] + '#finds=' + encodeURIComponent(t.dataset.findCopy);
+    // A phone opens its share sheet (messengers, mail); elsewhere the link is copied.
+    const f = FINDS.find(x => x.id === t.dataset.findCopy);
+    const done = () => { t.textContent = L('Ссылка скопирована', 'Link copied'); setTimeout(() => { t.textContent = L('Поделиться', 'Share'); }, 1600); };
+    const ask = () => prompt(L('Ссылка на находку:', 'Link to the find:'), url);
+    const copy = () => navigator.clipboard?.writeText(url).then(done, ask) ?? ask();
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) navigator.share({title: f?.title, text: f?.lead, url}).catch(e => { if (e.name !== 'AbortError') copy(); });
+    else copy();
+  }
+  else if (t.dataset.personLink) go({p: t.dataset.personLink});
+  else if (t.dataset.ref) go({f: t.dataset.ref});
+  else if (t.dataset.doc) openViewer(t.dataset.doc, t.dataset.citing);
+});
+$('finds-close').onclick = () => { stack.length = 0; go({}); };
+// Without data/site-finds.md the switch has no fourth button.
+if (!FINDS.length) document.querySelectorAll('[data-mode="finds"]').forEach(b => b.remove());
+markFinds();
+
 // ---------- Navigation: hash routes so the back button closes and returns ----------
 const stack = [];
 function go(route, replace) {
@@ -2606,6 +2788,7 @@ function go(route, replace) {
 function hashOf(route) {
   const parts = activeGroup ? [activeGroup] : [];
   if (route.page === 'book') parts.push(`book=${encodeURIComponent(route.book || 'g:')}`);
+  else if (route.page === 'finds' && route.find) parts.push(`finds=${encodeURIComponent(route.find)}`);
   else if (route.page) parts.push(route.page);
   if (route.news) parts.push('news');
   else if (route.help) parts.push('help');
@@ -2623,6 +2806,7 @@ function parseHash() {
     if (k === 'news') out.news = 1;
     if (k === 'map' || k === 'docs' || k === 'days') out.page = k;
     if (k === 'book') { out.page = 'book'; out.book = v ? decodeURIComponent(v) : 'g:'; }
+    if (k === 'finds') { out.page = 'finds'; if (v) out.find = decodeURIComponent(v); }
     if (k === 'help') out.help = 1;
     // A branch: #ivanovy, #g=ivanovy or the Russian name, #Ивановы.
     const g = groupOfToken(v === undefined ? k : k === 'g' ? v : '');
@@ -2636,6 +2820,7 @@ function parseHash() {
 }
 function render(route, push) {
   if (route.page === 'book') bookScope = route.book || 'g:';
+  if (route.page === 'finds') findOpen = route.find || findOpen;
   setPage(route.page);
   if (!route.p && !route.l && !route.f && !route.news && !route.path && !route.help && !route.send && !route.pl) { closePanel(); return; }
   if (!route.path) clearPath();
@@ -2990,6 +3175,7 @@ function setMe(id) {
   try { if (me) localStorage.setItem(ME_KEY, me); else localStorage.removeItem(ME_KEY); } catch (_) {}
   syncMe();
   if (current?.p) personView(current.p);
+  if (pageOpen === 'finds') findsView();
 }
 $('groups').addEventListener('click', e => {
   if (e.target.closest('#me-open')) go({p: me});
