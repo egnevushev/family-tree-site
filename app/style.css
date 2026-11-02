@@ -672,6 +672,11 @@ body.page-open{--bar:58px}
 /* Printing: the printer under the zoom buttons prints the tree; the card's «Печать» prints the card */
 .print-toggle svg,.print-card svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
 .print-toggle{display:inline-flex;align-items:center;justify-content:center;color:var(--forest)}
+/* «Скачать древо» (GEDCOM): what goes into the file and whether the living get their dates */
+.gedcom-form fieldset{border:0;margin:16px 0 0;padding:0}
+.gedcom-form legend{padding:0;margin:0 0 4px;font-size:12.5px;color:var(--muted)}
+.gedcom-form label{display:flex;gap:8px;align-items:baseline;margin:6px 0;font-size:14.5px;cursor:pointer}
+.gedcom-form .muted{font-size:12.5px;margin:6px 0 0}
 .print-card{display:inline-flex;align-items:center;justify-content:center;border:0;background:none;color:var(--forest);width:34px;height:34px;padding:0;margin-left:auto;border-radius:8px}
 .print-card:hover{background:var(--soft)}
 .print-card svg{display:block}
