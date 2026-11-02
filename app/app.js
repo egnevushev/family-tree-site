@@ -3163,6 +3163,12 @@ window.addEventListener('resize', syncSearchHint);
 if (touchScreen()) $('hint').textContent = L('Коснитесь человека — откроется его история, двойное касание — только его предки. Коснитесь линии — документы, на которых держится связь.', 'Tap a person to open their story, double-tap for their ancestors only. Tap a line for the documents the link rests on.');
 $('groups').innerHTML = `<button data-group="" title="${L('Всё древо', 'Whole tree')}">${L('Все', 'All')}</button>` + GROUPS.map(g => `<button data-group="${esc(g.id)}" title="${esc(g.title)}: ${L('только эта ветка, остальные свёрнуты', 'only this branch, the others folded')}"><i style="background:var(--g-${g.c}-ink)"></i>${esc(g.title)}</button>`).join('');
 $('groups').addEventListener('click', e => { const b = e.target.closest('[data-group]'); if (b) setGroup(b.dataset.group); });
+// A row of branches wider than the screen turns under the mouse wheel too, not only under a trackpad or a finger.
+$('groups').addEventListener('wheel', e => {
+  const g = $('groups');
+  if (g.scrollWidth <= g.clientWidth || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+  e.preventDefault(); g.scrollLeft += e.deltaY;
+}, {passive: false});
 // The reader's plate «● Имя ×», first in the row of branches: the name opens their card, × asks to forget them.
 function syncMe() {
   $('me-pill')?.remove();

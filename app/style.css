@@ -393,21 +393,17 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 .viewer-foot{padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#252d29;font-size:12.5px;color:#cfd6cf;max-height:30vh;overflow:auto}
 .viewer-foot a{color:#9fd0b3}
 
-/* Narrower screens: the branch switcher takes its own row under the header and scrolls sideways */
-@media (max-width:1179px){
-  :root{--bar:100px}
-  .bar{flex-wrap:wrap;align-content:center;row-gap:8px}
-  .groups{order:10;flex:1 0 100%;gap:6px;padding:0;border:0;border-radius:0;background:none;overflow-x:auto;scrollbar-width:none;touch-action:pan-x}
-  .groups::-webkit-scrollbar{display:none}
-  .groups button{border:1px solid var(--line);background:var(--panel)}
-  .groups button.active{border-color:var(--forest)}
-}
+/* The branch switcher always takes its own row under the header and scrolls sideways; the first row keeps room
+   for the names of the modes */
+:root{--bar:100px}
+.bar{flex-wrap:wrap;align-content:center;row-gap:0}
+/* The branches keep their capsule, as the filter on «Находки»; an empty line-wide item breaks the row before them */
+.bar::before{content:"";order:9;flex:0 0 100%;height:0}
+.groups{order:10;max-width:100%;margin-top:8px;overflow-x:auto;scrollbar-width:none;touch-action:pan-x}
+.groups::-webkit-scrollbar{display:none}
 
 /* One-row header on a computer: with the reader's plate the name of the site gives way to the search; on a laptop
    the plate and «Помогите заполнить» take their short forms («● Андрей», «Помочь») */
-@media (min-width:1180px) and (max-width:1599px){
-  .bar:has(.me-pill) .brand-text{display:none}
-}
 @media (min-width:1180px) and (max-width:1439px){
   .help-toggle .long,.me-pill .long{display:none}
   .help-toggle .short,.me-pill .short{display:inline}
@@ -416,12 +412,12 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 /* Phones and narrow tablets: the card becomes a bottom sheet */
 @media (max-width:760px){
   :root{--bar:94px}
-  .bar{row-gap:6px}
+  .groups{margin-top:6px}
   .groups button{padding:4px 11px;font-size:12.5px}
   .brand-text{display:none}
-  .bar{gap:10px;padding:0 12px}
+  .bar{column-gap:10px;padding:0 12px}
   .legend-toggle{padding:7px 9px;font-size:12.5px}
-  .bar{gap:8px}
+  .bar{column-gap:8px}
   .search input{padding:8px 10px}
   /* Searching, the field takes the row: the three buttons step aside until the search is left */
   .bar:has(.search:focus-within) .legend-toggle,.bar:has(#results:not([hidden])) .legend-toggle{display:none}
@@ -482,7 +478,7 @@ body.page-open .hint,body.page-open .zoom,body.page-open .focusbar{display:none}
 /* The branches (and the reader's plate) steer only the tree: on a page they step aside, and a header that wraps
    them onto a second row goes back to one row. */
 body.page-open .groups{display:none}
-@media (max-width:1179px){body.page-open{--bar:58px}}
+body.page-open{--bar:58px}
 .page-head{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);flex:none}
 .page-head h2{font-size:20px}
 .page-head .page-close{margin-left:auto;font-size:13px}
@@ -710,7 +706,7 @@ body.page-open .groups{display:none}
 .modes svg{flex:none}
 /* On a laptop the switch shows its signs only (the name is in the tooltip), and «Что нового» its short form */
 @media (min-width:761px) and (max-width:1439px){.news-toggle .long{display:none}.news-toggle .short{display:inline}}
-@media (min-width:761px) and (max-width:1799px){.bar .modes .long{display:none}.bar .modes button{padding:5px 10px}}
+@media (min-width:761px) and (max-width:1099px){.bar .modes .long{display:none}.bar .modes button{padding:5px 10px}}
 .modes button:hover{background:var(--soft)}
 .modes button[aria-pressed=true]{background:var(--forest);color:#fff}
 /* «В этот день»: a quiet line at the foot of the tree */
@@ -766,10 +762,11 @@ body.page-open .gh-float{display:none}
 /* «Находки» (Finds): a ribbon of years, then one find after another; a find opens in place, its scan beside it */
 .finds-filter{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel);overflow-x:auto;scrollbar-width:none;min-width:0}
 .finds-filter::-webkit-scrollbar{display:none}
-.finds-filter button{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:4px 11px;font-size:13px;background:none;white-space:nowrap}
+.finds-filter button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:999px;padding:5px 12px;font-size:13px;line-height:1.3;background:none;white-space:nowrap}
 .finds-filter button small{color:var(--muted);font-size:11.5px}
 .finds-filter button i{width:8px;height:8px;border-radius:50%;flex:none}
 .finds-filter button[aria-pressed=true]{background:var(--forest);color:#fff}
+.finds-filter button[aria-pressed=true] i{box-shadow:0 0 0 1.5px #fff}
 .finds-filter button[aria-pressed=true] small{color:#dfe9e2}
 .finds-body{flex:1;overflow:auto;padding:0 16px 60px}
 .finds{max-width:860px;margin:0 auto}
@@ -846,7 +843,7 @@ body.page-open .gh-float{display:none}
 @media print{.finds-page{display:none!important}}
 /* Four modes since «Finds»: on the narrowest one-row header the gaps and the mode buttons draw in a little,
    so the search keeps its room with the reader's plate */
-@media (min-width:1180px) and (max-width:1279px){.bar{gap:10px}.bar .modes button{padding:5px 8px}}
+@media (min-width:1180px) and (max-width:1279px){.bar{column-gap:10px}.bar .modes button{padding:5px 8px}}
 /* …and on a narrow tablet the name of the site gives way, so the first row (with the EN/RU switch) keeps one line
    and the search its room; the logo still leads to the start */
 @media (min-width:761px) and (max-width:959px){.brand-text{display:none}}
