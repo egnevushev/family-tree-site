@@ -173,6 +173,9 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 .card-actions .focus-btn{margin:0;padding:6px 10px;white-space:nowrap}
 .zoom{position:absolute;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:5}
 .zoom-row{display:flex;gap:8px}
+/* The column is as wide as its widest row (fit, print, download); its empty corner lets a tap through to the tree. */
+.zoom{pointer-events:none}
+.zoom>*{pointer-events:auto}
 /* + and − are one control: a column of two halves with a thin rule between (also on the map) */
 .zoom-pair{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 2px 8px rgba(37,55,47,.1);overflow:hidden;width:max-content}
 .zoom-pair button{border:0;border-radius:0;box-shadow:none!important;background:none}
