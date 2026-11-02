@@ -395,12 +395,13 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 
 /* The branch switcher always takes its own row under the header and scrolls sideways; the first row keeps room
    for the names of the modes */
-:root{--bar:100px}
-.bar{flex-wrap:wrap;align-content:center;row-gap:0}
-/* The branches keep their capsule, as the filter on «Находки»; an empty line-wide item breaks the row before them */
-.bar::before{content:"";order:9;flex:0 0 100%;height:0}
-.groups{order:10;max-width:100%;margin-top:8px;overflow-x:auto;scrollbar-width:none;touch-action:pan-x}
+:root{--bar-row:58px;--bar-strip:59px;--bar:117px}
+.bar{height:var(--bar-row)}
+/* The strip under the header, as the head of «Находки»: its own line below, the capsule in the middle */
+.bar::before{content:"";position:absolute;left:0;right:0;top:var(--bar-row);height:var(--bar-strip);box-sizing:border-box;background:rgba(245,242,233,.94);border-bottom:1px solid var(--line)}
+.groups{position:absolute;left:16px;top:calc(var(--bar-row) + (var(--bar-strip) - 1px - 35px) / 2);max-width:calc(100% - 32px);overflow-x:auto;scrollbar-width:none;touch-action:pan-x}
 .groups::-webkit-scrollbar{display:none}
+body.page-open .bar::before{display:none}
 
 /* One-row header on a computer: with the reader's plate the name of the site gives way to the search; on a laptop
    the plate and «Помогите заполнить» take their short forms («● Андрей», «Помочь») */
@@ -411,8 +412,8 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 
 /* Phones and narrow tablets: the card becomes a bottom sheet */
 @media (max-width:760px){
-  :root{--bar:94px}
-  .groups{margin-top:6px}
+  :root{--bar-strip:48px;--bar:106px}
+  .groups{left:12px;max-width:calc(100% - 24px);top:calc(var(--bar-row) + (var(--bar-strip) - 1px - 32px) / 2)}
   .groups button{padding:4px 11px;font-size:12.5px}
   .brand-text{display:none}
   .bar{column-gap:10px;padding:0 12px}
