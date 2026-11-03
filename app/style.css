@@ -183,7 +183,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15;margin:0}
 .zoom-pair button:hover{background:var(--soft)}
 #zoom-fit{display:inline-flex;align-items:center;justify-content:center;color:var(--forest)}
 .zoom button{width:42px;height:42px;padding:0;font-size:20px;box-shadow:0 2px 8px rgba(37,55,47,.1)}
-.hint{position:absolute;left:120px;bottom:calc(16px + env(safe-area-inset-bottom));margin:0;max-width:440px;font-size:12.5px;color:var(--muted);background:rgba(255,253,247,.9);padding:8px 12px;border-radius:10px;border:1px solid var(--line)}
+.hint{position:absolute;left:166px;bottom:calc(16px + env(safe-area-inset-bottom));margin:0;max-width:440px;font-size:12.5px;color:var(--muted);background:rgba(255,253,247,.9);padding:8px 12px;border-radius:10px;border:1px solid var(--line)}
 
 .legend{position:absolute;right:16px;top:12px;width:340px;max-width:calc(100% - 32px);max-height:calc(100% - 24px);overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 12px 32px rgba(37,55,47,.14);z-index:7}
 .legend h2{font-size:21px;margin:0 28px 6px 0}
@@ -432,7 +432,8 @@ body.page-open .bar::before{display:none}
   .me-ask{left:12px;right:12px}
   .card-actions{gap:6px}
   .card-actions .focus-btn{padding:6px 8px;font-size:12.5px}
-  .hint{left:116px;right:12px;font-size:12px}
+  /* On a phone the hint stands above the button row, beside + and −: there it is wide enough to stay short */
+  .hint{left:66px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));font-size:12px}
   #panel{top:auto;left:0;width:auto;height:calc(100% - var(--bar));border-left:0;border-top:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:0 -12px 32px rgba(37,55,47,.16);transform:translateY(100%);padding:0 18px calc(40px + env(safe-area-inset-bottom))}
   #panel[data-state=peek]{transform:translateY(52%)}
   #panel[data-state=full],#panel[data-state=open]{transform:none}
