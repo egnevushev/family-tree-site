@@ -35,6 +35,7 @@ addEventListener('DOMContentLoaded', () => {
       background:rgba(33,58,47,.94);color:#fbf8ef;font:400 27px/1.3 var(--serif, Georgia, serif);padding:13px 28px 15px;border-radius:16px;
       box-shadow:0 10px 30px rgba(20,35,28,.25);opacity:0;transition:opacity .45s ease, transform .45s ease}
     #promo-cap.on{opacity:1;transform:translate(-50%,0)}
+    #promo-cap.top{bottom:auto;top:96px}
     #promo-cap small{display:block;font:400 17px/1.35 system-ui, -apple-system, sans-serif;opacity:.85;margin-top:5px}
     body:has(#promo-card) #promo-cursor{opacity:0}
     body.promo-private #panel-body :is(.life,.story,.places-line,.kin){filter:blur(6px)}
@@ -78,6 +79,8 @@ async function scene(browser, name, run) {
   const cursor = {x: W * 0.62, y: H * 0.55};
   const s = {
     page,
+    // Where the drawn pointer is now.
+    at: () => ({...cursor}),
     wait: ms => page.waitForTimeout(ms * PACE),
     // Caption on (text, small second line) or off (no text).
     cap: (text, small) => page.evaluate(([t, sm]) => {
@@ -118,6 +121,25 @@ async function scene(browser, name, run) {
       }
     },
     click: async (target, ms) => { await s.move(target, ms); await page.waitForTimeout(160); await page.mouse.down(); await page.waitForTimeout(90); await page.mouse.up(); },
+    // A line of the tree is clicked on a point of its own path (its box's middle may lie on a crossing line).
+    clickLine: async (sel, at = .35, ms) => {
+      const pt = await page.evaluate(([sel, at]) => {
+        const el = document.querySelector(sel), path = el.matches('path') ? el : el.querySelector('path');
+        const m = path.getScreenCTM(), pts = [];
+        for (let u = .04; u < 1; u += .04) {
+          const q = path.getPointAtLength(path.getTotalLength() * u), x = m.a * q.x + m.c * q.y + m.e, y = m.b * q.x + m.d * q.y + m.f;
+          // Only a point where this line itself is on top: another line may cross it (a child's stem from a couple).
+          if (document.elementFromPoint(x, y)?.closest('[data-line]') === el) pts.push({x, y, d: Math.abs(u - at)});
+        }
+        return pts.sort((a, b) => a.d - b.d)[0];
+      }, [sel, at]);
+      await s.click(pt, ms);
+    },
+    // Scroll an element of a scrolling box smoothly into the middle of the screen.
+    reveal: async (sel, ms = 700) => {
+      await page.evaluate(sel => document.querySelector(sel).scrollIntoView({block: 'center', behavior: 'smooth'}), sel);
+      await page.waitForTimeout(ms);
+    },
     type: async text => { for (const ch of text) { await page.keyboard.type(ch); await page.waitForTimeout(70); } },
     // Scroll what is under the pointer smoothly, on animation frames: headless Chrome scrolls a wheel step at once.
     wheel: (dy, ms = 600) => page.evaluate(([x, y, dy, ms]) => new Promise(done => {
@@ -181,7 +203,7 @@ const PREP = {
     const c = document.createElement('div'); c.id = 'promo-card';
     c.innerHTML = `<img src="icons/mark.svg" alt=""><h1>${title}</h1><div class="dots">${dots.map(([col, t]) => `<span><i style="background:${col}"></i>${t}</span>`).join('')}</div><p>${sub}</p>`;
     document.body.append(c);
-  }, [T('Family tree', 'Семейное древо'), BRANCHES, T('How to use the site — in a minute and a half', 'Как пользоваться сайтом — за полторы минуты')]),
+  }, [T('Family tree', 'Семейное древо'), BRANCHES, T('How to use the site — in three minutes', 'Как пользоваться сайтом — за три минуты')]),
   line: s => s.page.evaluate(() => centerOn('ivan', 0.95)),
   docs: async s => {
     await s.page.evaluate(() => go({page: 'docs'}));
@@ -195,6 +217,19 @@ const PREP = {
     await s.wait(500);
   },
   branches: s => s.page.evaluate(() => fit()),
+  tools: s => s.page.evaluate(() => centerOn('ivan', 0.75)),
+  fan: async s => {
+    await s.page.evaluate(() => { centerOn('nikolay', 0.8); go({p: 'nikolay'}); });
+    await s.wait(900);
+  },
+  // «Time» lays out every life on first open; opening it once beforehand keeps the recorded jump smooth.
+  time: async s => {
+    await s.page.evaluate(() => go({page: 'time'}));
+    await s.wait(900);
+    await s.page.evaluate(() => go({}));
+    await s.page.evaluate(() => centerOn('matvey', 0.8));
+    await s.wait(500);
+  },
   // The finds page draws its cards and scans on first open; opening it once beforehand keeps the recorded jump smooth.
   finds: async s => {
     await s.page.evaluate(() => go({page: 'finds'}));
@@ -246,17 +281,38 @@ const SCENES = {
   async line(s) {
     await s.cap(T('Click a line to see the documents the link rests on', 'Нажмите на линию — увидите документы, на которых держится связь'));
     await s.wait(300);
-    // The middle of the line itself: the middle of its box may fall beside a bent line.
-    const mid = await s.page.evaluate(key => {
-      const el = document.querySelector(`#edges [data-line="${key}"]`), pt = el.getPointAtLength(el.getTotalLength() / 2), m = el.getScreenCTM();
-      return {x: pt.x * m.a + pt.y * m.c + m.e, y: pt.x * m.b + pt.y * m.d + m.f};
-    }, 'c:ivan');
-    await s.click(mid, 800);
+    await s.clickLine('#edges [data-line="c:ivan"]', .5, 800);
     await s.wait(1000);
+    await s.reveal('#panel-body [data-doc]');
     await s.click('#panel-body [data-doc]', 700);
     await s.wait(400);
     await s.cap(T('The scan of the document, with a box around the record', 'Скан документа — рамкой отмечена нужная запись'));
-    await s.wait(2000);
+    await s.wait(2200);
+    await s.page.evaluate(() => closeViewer());
+    await s.page.evaluate(() => go({p: 'nikolay'}));
+    await s.wait(700);
+    await s.reveal('#panel-body [data-doc]');
+    await s.click('#panel-body [data-doc]', 700);
+    await s.wait(500);
+    await s.cap(T('The arrows at the sides page through all documents of the card', 'Стрелки по бокам листают все документы карточки'), T('and so do the ← → keys', 'и клавиши ← → на клавиатуре'));
+    await s.click('#viewer-doc-next', 800);
+    await s.wait(1600);
+    await s.click('#viewer-doc-next', 400);
+    await s.wait(1800);
+    await s.click('#viewer-close', 700);
+    await s.wait(300);
+  },
+  // The ancestors of Nikolay Ivanovich as rings of a fan, from the button of his card.
+  async fan(s) {
+    await s.cap(T('«Ancestor fan» — all of a person’s ancestors in rings', '«Веер предков» — все предки человека кольцами'), T('the father’s side on the left, the mother’s on the right; a ring for each generation', 'отец слева, мать справа; у каждого колена своё кольцо'));
+    await s.reveal('#panel-body [data-fan-open]', 500);
+    await s.click('#panel-body [data-fan-open]', 800);
+    await s.wait(2400);
+    await s.cap(T('The colour is what the link rests on; an empty place is someone not found yet', 'Цвет — на чём держится связь, пустое место — кого ещё не нашли'), T('beside it: how many are found and who is missing nearest', 'сбоку: сколько предков найдено и кого не хватает ближе всего'));
+    await s.move('#fan-world [data-fan-slot="2:0"]', 900);
+    await s.wait(1200);
+    await s.move('#fan-side', 900);
+    await s.wait(2400);
   },
   async branches(s) {
     await s.cap(T(`Branches: ${BRANCHES.map(b => b[1]).join(', ')}`, `Ветки: ${BRANCHES.map(b => b[1]).join(', ')}`), T('Click one to keep only that side of the family', 'Нажмите — останется только эта сторона семьи'));
@@ -266,6 +322,52 @@ const SCENES = {
     await s.wait(1200);
     await s.click('#groups [data-group=""]', 600);
     await s.wait(700);
+  },
+  // The buttons under the zoom: the folded tree, the tree in a year, the menu «⋯» with print and the GEDCOM file.
+  async tools(s) {
+    await s.cap(T('A big tree opens folded: the direct line, the ancestors’ brothers and sisters', 'Древо открывается свёрнутым: прямая линия, братья и сёстры предков'), T('the rest under «+N»; the button below shows everyone at once', 'остальные — по «+N»; кнопка внизу раскрывает всех сразу'));
+    await s.wait(1200);
+    await s.click('#side-toggle', 900);
+    await s.wait(2400);
+    await s.click('#side-toggle', 600);
+    await s.wait(1400);
+    await s.cap(T('«The tree in a year»: who lived then and how old they were', '«Древо в году»: кто жил тогда и сколько им было лет'));
+    await s.click('#year-toggle', 800);
+    await s.wait(500);
+    await s.page.evaluate(() => setSlice(1930));
+    await s.camera('ivan', 0.8, 1400);
+    await s.wait(2000);
+    await s.click('#year-close', 700);
+    await s.wait(400);
+    // The caption stands at the top here: the menu opens above its button, where the caption would cover it.
+    await s.page.evaluate(() => document.getElementById('promo-cap').classList.add('top'));
+    await s.cap(T('The «⋯» menu: the tree on an A3 sheet, and the whole tree as a GEDCOM file', 'Меню «⋯»: схема на лист A3 и всё древо файлом GEDCOM'), T('for MyHeritage, Gramps and other programs', 'для MyHeritage, Gramps и других программ'));
+    await s.click('#tree-menu', 800);
+    await s.wait(700);
+    await s.move('#export-toggle', 600);
+    await s.wait(2400);
+    await s.page.evaluate(() => treeMenu(false));
+    await s.wait(300);
+  },
+  // «Time»: the lives on one scale of years, the epoch above them; the cursor of the year is dragged.
+  async time(s) {
+    await s.cap(T('«Time» — every life on one scale of years', '«Время» — жизни всех на одной шкале лет'), T('and the events of the epoch above them', 'и события эпохи над ними'));
+    await s.click('#modes [data-mode="time"]', 800);
+    await s.wait(1600);
+    await s.cap(T('Move the year — see who lived then and how old they were', 'Двигайте год — видно, кто тогда жил и сколько им было лет'));
+    await s.move('#time-body .tl-knob', 700);
+    await s.page.mouse.down();
+    await s.drag({x: s.at().x - 220, y: s.at().y}, 1600);
+    await s.wait(600);
+    await s.drag({x: s.at().x + 120, y: s.at().y}, 1200);
+    await s.page.mouse.up();
+    await s.wait(2000);
+    await s.click('#time-tree', 800);
+    await s.wait(500);
+    await s.cap(T('«Show on the tree» — the same tree in that year', '«Показать на древе» — то же древо в этом году'), T('those not born yet or gone already are paler', 'кого ещё не было или уже нет — бледнее'));
+    await s.wait(2600);
+    await s.page.evaluate(() => setSlice(null));
+    await s.wait(300);
   },
   async map(s) {
     await s.cap(T('The map of places: where they lived, served and studied', 'Карта мест: где жили, служили и учились'));
@@ -282,6 +384,9 @@ const SCENES = {
     await s.wheel(500, 900);
     await s.click('[data-docs-by="year"]', 700);
     await s.wait(1300);
+    await s.cap(T('«Photos» — the family album', '«Фото» — семейный альбом'), T('know who is in a photo or when it was taken — write', 'знаете, кто на снимке или когда он сделан, — напишите'));
+    await s.click('[data-docs-by="photo"]', 700);
+    await s.wait(2600);
   },
   // «Finds»: the page, a bar on the time ribbon opens one find, then a few lines of it.
   async finds(s) {
@@ -318,6 +423,19 @@ const SCENES = {
     await s.move('#panel-body', 400);
     await s.wheel(380, 800);
     await s.wait(1300);
+    // The sections further down, in their order on the page: people still without a photo, then the letters to archives.
+    const heads = await s.page.evaluate(() => [...document.querySelectorAll('#panel-body h3')].map(h => h.textContent));
+    const photoAt = heads.findIndex(h => /photo yet|ни одной фото/i.test(h)), askAt = heads.findIndex(h => /archives|ответа из архива/i.test(h));
+    if (photoAt >= 0) {
+      await s.cap(T('«No photo yet» — perhaps there is one in your album', '«Нет ни одной фотографии» — может быть, снимок есть в вашем альбоме'));
+      await s.page.evaluate(i => document.querySelectorAll('#panel-body h3')[i].scrollIntoView({block: 'start', behavior: 'smooth'}), photoAt);
+      await s.wait(2600);
+    }
+    if (askAt >= 0) {
+      await s.cap(T('«Waiting for the archives» — what has been asked already', '«Ждём ответа из архива» — о чём уже спросили'));
+      await s.page.evaluate(i => document.querySelectorAll('#panel-body h3')[i].scrollIntoView({block: 'start', behavior: 'smooth'}), askAt);
+      await s.wait(2600);
+    }
   },
   // «This is me» on the keeper's own card, then a great-great-grandfather's card says who he is to them.
   async me(s) {

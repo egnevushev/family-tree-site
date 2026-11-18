@@ -6,17 +6,19 @@ A static site for genealogical research. Every link and every fact cites a docum
 
 What it does:
 
-- **tree** with the branches of the family; the weight and dash of a line show what the link rests on;
+- **tree** with the branches of the family; the weight and dash of a line show what the link rests on; a big tree opens **folded** (the direct line and the ancestors' brothers and sisters, the rest under «+N»), one button shows everyone;
 - **person cards**: life story, timeline, family, documents with links to scans;
-- **scan viewer** with a box around the record that matters;
+- **scan viewer** with a box around the record that matters; the arrows at its sides (and ← →) **page through all documents** of the card, find or list it was opened from;
+- **ancestor fan**: all ancestors of a person in rings, coloured by what each link rests on, with who is missing nearest;
+- **«Time»**: every life on one scale of years with the events of the epoch above them; a cursor of the year says who lived then and how old they were, and **«The tree in a year»** shows the same on the tree;
 - **disagreements** (⚑) and decisions about them;
 - **hypotheses**: possible kinship drawn dashed, never mixed with what is proven;
 - **«This is me» and «How related»**: the kinship of any two people;
-- **map of places**, **all documents** by place and by year, **«On this day»**;
+- **map of places**, **all documents** by place, by year and the **photo album**, **«On this day»**;
 - **finds**: the most surprising things from the archives on a ribbon of years; a find opens in place beside its scan, can be shared by link, and once the reader has pressed «This is me» every name in it says how that person is related to them;
 - **«new» dots**, kept in each reader's browser: on a find not read yet (and «updated» on one rewritten since), on a person whose life story is new or rewritten since the reader's first visit, on the Finds button and on «What's new»;
-- **book of stories** and printing the tree on A3;
-- **«What's new»** and **«Help fill in»** — questions to the family;
+- **book of stories** and printing the tree on A3, and the whole tree or a branch as a **GEDCOM** file, from the «⋯» menu;
+- **«What's new»** and **«Help fill in»** — questions to the family, people still without a photo, and letters to archives still **waiting for an answer**;
 - **a short video** about the site, shown at the first visit and under «?», in each language;
 - **two languages**, English and Russian, with a switch in the header: the interface and, where they are translated, the data.
 
@@ -62,6 +64,8 @@ data/site-evidence.json   PDF pages and boxes on scans
 data/site-hypotheses.json possible kinship
 data/site-personal.json   people the family knows itself
 data/site-merges.json     (optional) several records of one person on one card
+data/site-history.json    (optional) the events of the epoch for «Time» and the life lines
+requests/<id>/request.md  (optional) letters to archives; their journal feeds «Waiting for the archives»
 data/site-words.json      words that stop the build
 data/site-map-base.json   base map (Natural Earth)
 sources/                  your files: scans, PDFs, texts
@@ -69,7 +73,7 @@ scripts/                  the build
 app/                      the site itself (HTML, CSS, JS, no frameworks)
 ```
 
-`app/data.js` and `site-media/` are generated; do not edit them by hand.
+`app/data.js`, its parts `app/data-<part>.js` (the finds and the base map, loaded when a page needs them) and `site-media/` are generated; do not edit them by hand. The app itself is split into files by what they do: `core.js` (the data and the language), `family.js`, `layout.js`, `tree.js`, `panel.js` (the card), one file per page (`map.js`, `docs.js`, `finds.js`, `time.js`, `fan.js`, `book.js`, `days.js`) and `app.js` (the routes).
 
 All optional files can be deleted: the site does without stories, places, hypotheses, questions and finds (without finds the switch has no fourth button).
 
@@ -131,7 +135,7 @@ The site speaks English and Russian. The reader switches with the EN/RU button i
  "source_ids": ["D-1-1-12"], "locator": "л. 3 об., № 3", "note": ""}
 ```
 
-- `field` — for example `birth`, `baptism`, `death`, `marriage`, `occupation`, `education`, `service`, `military_event`, `residence`, `arrest`, `rehabilitation`, `canonization`, `identification`. The labels are `FIELDS` and `FIELDS_EN` in `app/app.js`. Dated facts go into the timeline.
+- `field` — for example `birth`, `baptism`, `death`, `marriage`, `occupation`, `education`, `service`, `military_event`, `residence`, `arrest`, `rehabilitation`, `canonization`, `identification`. The labels are `FIELDS` and `FIELDS_EN` in `app/core.js`. Dated facts go into the timeline.
 - `decided_by` (optional) — `{"by": "…", "date": "…", "note": "…"}`: the status is set by the family's decision, not by a document. The site shows the date and the note.
 
 **Link** (`relationships`): `kind` is `parent` (`from_id` is the parent), `spouse` or `sibling`.
@@ -196,7 +200,7 @@ A line is drawn by its weakest parent. Only a document raises a status. Matching
 ```
 
 - `branches` — the branches of the family. Usually one per grandparent of the root person; `head` is the id of that person. A branch holds their ancestors, the ancestors' descendants and those who married in. Colours follow the order, up to six branches.
-- `contact` — text shown instead of the message form. There is no form until `inbox_url` is set: no server for messages is included. The protocol is described at `bindForm` in `app/app.js`: `POST <inbox_url>file` for each file, then `POST <inbox_url>send` with JSON; the answer is `{ok, id}` or `{error}`.
+- `contact` — text shown instead of the message form. There is no form until `inbox_url` is set: no server for messages is included. The protocol is described at `bindForm` in `app/panel.js`: `POST <inbox_url>file` for each file, then `POST <inbox_url>send` with JSON; the answer is `{ok, id}` or `{error}`.
 - `intro_video` and `intro_poster` — the video about the site and its still, paths from `app/`, one per language. A new reader sees it once; later it is under «?». Leave them out and there is no video.
 - `source_url` — a link to the code of the site at the foot of «?». Point it at your own repository or leave it out.
 
@@ -214,7 +218,8 @@ Ivan Matveevich Sokolov was born on 14 January 1898… [C019][C020][R019]
 
 - `checked` — up to which numbers of facts, links and disagreements the story was checked. If newer facts about the person appear, `build.py` warns.
 - `**bold**` works.
-- The formats of `changelog.md`, `site-questions.md` and `site-finds.md` are described at the top of the files themselves. The keys of questions may be Russian or English (`About:`, `Status:`, `Known:`, `Missing:`, `How to help:`, `## Disagreements`), and so may those of finds (`Years:`, `Where:`, `People:`, `Document:`, `In short:`, `Rests on:`).
+- The formats of `changelog.md`, `site-questions.md` and `site-finds.md` are described at the top of the files themselves. Under `## Requests` in `site-questions.md` a line «- <request id> [person ids]: what was asked» shows a letter to an archive under «Waiting for the archives» while the last line of the journal in `requests/<id>/request.md` («- 2026-10-03 · sent · …») says `sent`, `draft`, `ready` or `answered`.
+- `data/site-history.json` — the events of the epoch: `{"year": 1914, "end": 1918, "text": {"en": "First World War", "ru": "Первая мировая война"}, "major": true}`; `major` ones are shown at once, `branches` (ids of `site.json`) limits an event to those branches. They are background, not facts about the family. The keys of questions may be Russian or English (`About:`, `Status:`, `Known:`, `Missing:`, `How to help:`, `## Disagreements`), and so may those of finds (`Years:`, `Where:`, `People:`, `Document:`, `In short:`, `Rests on:`).
 - A find is a short story for the whole family: `## <id>: <title>`, the key lines, then the paragraphs with references. The id is its address on the site (`#finds=<id>`). `Document:` is optional: a fact `C…` whose source has a scan in `site-media/`, shown beside the find.
 
 ## Rules the build checks

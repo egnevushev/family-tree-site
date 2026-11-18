@@ -53,7 +53,7 @@ def minors(people, today):
         if full:
             adult = datetime.date(full.year + 18, full.month, min(full.day, 28 if full.month == 2 else 31)) <= today
         else:
-            adult = y + 18 < today.year
+            adult = datetime.date(y + 18, 12, 31) <= today
         if not adult:
             out.add(p['id'])
     return out
@@ -71,6 +71,7 @@ def child_view(data, kids):
             if c['field'] not in ('name', 'birth'):
                 continue
             c.update(note='', locator='')
+            c.pop('decided_by', None)  # its note is a text about the child too
             if c['field'] == 'birth':
                 c['value'] = str(birth_date({'birth': flat(c['value'])})[0] or '')
         claims.append(c)
@@ -78,6 +79,7 @@ def child_view(data, kids):
     for r in data['relationships']:
         if {r['from_id'], r['to_id']} & kids:
             r['note'] = ''
+            r.pop('decided_by', None)
     return [f'conflict {x["id"]} concerns a child under 18 — of children the site shows only the name and year'
             for x in data['conflicts'] if set(x['people']) & kids]
 
@@ -155,6 +157,26 @@ def living_dates_in_news(people, personal, text):
     return problems
 
 
+MONTHS_EN = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+
+
+def child_dates_in_texts(people, kids, texts):
+    """Of a living child the site says the name and the year, so the full date of birth stands in no text of
+    the site — not in the story of a parent either. texts: [(place, text)]; people carry the full dates."""
+    problems = []
+    for p in people:
+        full = birth_date(p)[1]
+        if p['id'] not in kids or not full:
+            continue
+        forms = {full.isoformat(), full.strftime('%d.%m.%Y'), f'{full.day}.{full.month:02d}.{full.year}',
+                 f'{full.day} {MONTHS[full.month - 1]} {full.year}', f'{full.day} {MONTHS_EN[full.month - 1]} {full.year}',
+                 f'{MONTHS_EN[full.month - 1]} {full.day}, {full.year}'}
+        for place, text in texts:
+            if text and any(re.search(r'(?<![\d.])' + re.escape(form) + r'(?![\d])', text) for form in forms):
+                problems.append(f'{place}: the full birth date of a child under 18 ({p["name"]}) — of children the site shows only the name and year')
+    return problems
+
+
 def read_story(path):
     text = path.read_text()
     meta = {}
@@ -204,11 +226,20 @@ def read_changelog(path=ROOT / 'data/changelog.md'):
     return entries
 
 
-def changelog_problems(entries):
+# A name in «What's new» may link to the person's card: [Ivan Petrovich](#p=ivan).
+PERSON_LINK = re.compile(r'\[([^\]]+)\]\(#p=([^)\s]*)\)')
+
+
+def changelog_problems(entries, people=None):
     problems, seen = [], set()
     for e in entries:
+        for text in [e['lead'], *(i for g in e['groups'] for i in g['items'])]:
+            for name, pid in PERSON_LINK.findall(text):
+                if people is not None and pid not in people:
+                    problems.append(f'data/changelog.md: entry «{e["date"]}» links [{name}](#p={pid}) — there is no such person')
+    for e in entries:
         if e['date'] in seen:
-            problems.append(f'data/changelog.md: heading «## {e["date"]}» repeats — one entry per release; a second release that day is, say, «{e["date"]}, evening»')
+            problems.append(f'data/changelog.md: heading «## {e["date"]}» repeats — one entry per release; a second release that day carries its time, say «{e["date"].split(",")[0]}, 14:05»')
         seen.add(e['date'])
         if not e['lead']:
             problems.append(f'data/changelog.md: entry «{e["date"]}» has no first line — the headline in one line before the groups')
@@ -220,15 +251,21 @@ QUESTION = re.compile(r'## ([a-z0-9-]+): (.+)')
 QUESTION_KEYS = {'О ком': 'people', 'Статус': 'status_ref', 'Знаем': 'known', 'Не хватает': 'missing', 'Чем помочь': 'help',
                  'About': 'people', 'Status': 'status_ref', 'Known': 'known', 'Missing': 'missing', 'How to help': 'help'}
 CONFLICTS_HEADINGS = ('## Расхождения', '## Disagreements')
+REQUESTS_HEADINGS = ('## Запросы', '## Requests')
+REQUEST_LINE = re.compile(r'- (\S+?)(?: \[([^\]]*)\])?: (.+)')
+# What the site says of a request by its status in requests/<id>/request.md; other statuses are not shown.
+REQUEST_SHOWN = {'sent': 'sent', 'draft': 'prepared', 'ready': 'prepared', 'answered': 'answered'}
 
 
 def read_questions(path=ROOT / 'data/site-questions.md'):
-    """data/site-questions.md → {main: [{id, title, people, status_ref, known, missing, help}], conflicts: [{id, ask}]}.
+    """data/site-questions.md → {main: [{id, title, people, status_ref, known, missing, help}], conflicts: [{id, ask}],
+    requests: [{id, people, text}]}.
 
     The page «Help fill in»: main questions written by hand, «## <id>: <question>» with lines «Key: text»;
     under «## Disagreements» (or «## Расхождения») the conflicts the family can clear up, «- X…: what to ask». Text before the first
-    «## » is for editors only."""
-    out = dict(main=[], conflicts=[])
+    «## » is for editors only. Under «## Requests» (or «## Запросы») the letters to archives still waiting for an
+    answer, «- <request id> [people]: what was asked», shown as «Waiting for the archives»."""
+    out = dict(main=[], conflicts=[], requests=[])
     if not path.exists():
         return out
     section, key = None, None
@@ -236,7 +273,9 @@ def read_questions(path=ROOT / 'data/site-questions.md'):
         line = line.rstrip()
         if line.startswith('## '):
             m = QUESTION.fullmatch(line)
-            if line in CONFLICTS_HEADINGS:
+            if line in REQUESTS_HEADINGS:
+                section = 'requests'
+            elif line in CONFLICTS_HEADINGS:
                 section = 'conflicts'
             elif m:
                 section = 'main'
@@ -248,6 +287,10 @@ def read_questions(path=ROOT / 'data/site-questions.md'):
         elif section == 'conflicts' and line.startswith('- '):
             xid, _, ask = line[2:].partition(':')
             out['conflicts'].append(dict(id=xid.strip(), ask=ask.strip()))
+        elif section == 'requests' and line.startswith('- '):
+            m = REQUEST_LINE.fullmatch(line)
+            out['requests'].append(dict(id=m[1], people=[i.strip() for i in (m[2] or '').split(',') if i.strip()], text=m[3].strip())
+                                   if m else dict(id=line[2:].split(':')[0].strip(), people=[], text=''))
         elif section == 'main' and line:
             name, sep, value = line.partition(':')
             if sep and name in QUESTION_KEYS:
@@ -257,6 +300,61 @@ def read_questions(path=ROOT / 'data/site-questions.md'):
             elif key and key not in ('people', 'status_ref'):
                 out['main'][-1][key] += ' ' + line.strip()
     return out
+
+
+def request_states(requests_dir=None):
+    """{request id: (what the site says — sent, prepared, answered or '' when not shown, date of that status)}
+    from the journals in requests/<id>/request.md: the last line «- YYYY-MM-DD · <status> · …» under «## Журнал»
+    (or «## Journal»). Without the folder there are no requests."""
+    out = {}
+    for path in sorted((requests_dir or ROOT / 'requests').glob('*/request.md')):
+        text = path.read_text(encoding='utf-8')
+        journal = re.findall(r'^- (\d{4}-\d{2}-\d{2}) · (\S+) · ', re.split(r'\n## (?:Журнал|Journal)\n', text, maxsplit=1)[-1], re.M)
+        if journal:
+            out[path.parent.name] = (REQUEST_SHOWN.get(journal[-1][1], ''), journal[-1][0])
+    return out
+
+
+def request_problems(data, questions, kids, states):
+    """«Waiting for the archives»: only requests that exist and are under way, about people of the tree, not children."""
+    where = 'data/site-questions.md: «Requests»'
+    people = {p['id'] for p in data['people']}
+    problems, seen = [], set()
+    for item in questions['requests']:
+        name = f'{where} — {item["id"]}'
+        if item['id'] in seen:
+            problems.append(f'{name} repeats')
+        seen.add(item['id'])
+        if item['id'] not in states:
+            problems.append(f'{name}: there is no such request in requests/')
+        elif not states[item['id']][0]:
+            problems.append(f'{name}: the request is closed, refused or not prepared yet — remove the line')
+        if not item['text']:
+            problems.append(f'{name}: write «- <id> [people]: text for the family»')
+        problems += [f'{name}: no person {i}' for i in item['people'] if i not in people]
+        problems += [f'{name}: {i} is a child under 18' for i in item['people'] if i in kids]
+    return problems
+
+
+def read_history(branches, path=ROOT / 'data/site-history.json'):
+    """The background of the times for the life line and the page «Time»: [{year, end?, text, major?, branches?}],
+    by year; text may be {"ru": …, "en": …}; branches are ids of data/site.json."""
+    if not path.exists():
+        return [], []
+    events = json.loads(path.read_text(encoding='utf-8'))['events']
+    problems = []
+    for i, e in enumerate(events):
+        name = f'data/site-history.json: event {i + 1}'
+        texts = e.get('text') if isinstance(e.get('text'), dict) else {'': e.get('text')}
+        if not isinstance(e.get('year'), int) or not 1500 < e['year'] < 2100 or not all(str(t or '').strip() for t in texts.values()):
+            problems.append(f'{name}: year (a number) and text are needed')
+            continue
+        if 'end' in e and (not isinstance(e['end'], int) or e['end'] <= e['year']):
+            problems.append(f'{name} ({e["year"]}): end must be a year after year')
+        extra = set(e) - {'year', 'end', 'text', 'major', 'branches'}
+        if extra or set(e.get('branches', [])) - set(branches):
+            problems.append(f'{name} ({e["year"]}): extra fields or an unknown branch')
+    return sorted((e for e in events if isinstance(e.get('year'), int)), key=lambda e: (e['year'], e.get('end', e['year']))), problems
 
 
 def question_problems(data, questions, kids):
@@ -367,6 +465,115 @@ def find_translation_problems(base, other, where):
     return problems
 
 
+def dump_js(site, name='window.FAMILY_DATA'):
+    """The browser file: one record per line, so a Git diff of app/data.js shows the records that changed."""
+    one = lambda v: json.dumps(v, ensure_ascii=False)
+    parts = []
+    for key, value in site.items():
+        if isinstance(value, list) and value:
+            body = '[\n' + ',\n'.join(one(v) for v in value) + '\n]'
+        elif isinstance(value, dict) and len(value) > 8:
+            body = '{\n' + ',\n'.join(f'{one(k)}: {one(v)}' for k, v in value.items()) + '\n}'
+        else:
+            body = one(value)
+        parts.append(f'{one(key)}: {body}')
+    return name + ' = {\n' + ',\n'.join(parts).replace('</', '<\\/') + '\n};\n'
+
+
+def text_hash(text):
+    """The same short hash of a text as textHash in the app (djb2 with xor over UTF-16 units, in base 36): the
+    build can say «this story, this find is the one you have read» without the browser hashing every text."""
+    h = 5381
+    for ch in text:
+        unit = ord(ch)
+        if unit > 0xFFFF:  # the app takes the first UTF-16 unit of a character outside the basic plane
+            unit = 0xD800 + ((unit - 0x10000) >> 10)
+        h = ((h * 33) & 0xFFFFFFFF) ^ unit
+    digits, out = '0123456789abcdefghijklmnopqrstuvwxyz', ''
+    while h:
+        h, r = divmod(h, 36)
+        out = digits[r] + out
+    return out or '0'
+
+
+def load_js(text):
+    """The object a file written by dump_js assigns."""
+    return json.loads(text.split('=', 1)[1].rstrip().rstrip(';'))
+
+
+# Sections the first screen does not need, by the part that carries them: each part is its own file,
+# app/data-<part>.js, which the app loads when a page asks for it (and ahead of time, once the tree is drawn).
+# The core, app/data.js, names the parts and the hash of each, so a part is cached like any other script.
+# A section may be listed here only once the app asks for its part before reading it.
+PARTS = {'map': ['map_base'], 'finds': ['finds']}
+# What the core keeps of a section that moved into a part — enough for the first screen to mark what is new:
+#   map_base         -> map_projection: the numbers the map and the place lists are computed with;
+#   finds            -> find_hashes {id: hash of the text}: the dot «есть непрочитанные находки»;
+#   changelog_older  -> the entries of «Что нового» past the newest NEWS_IN_CORE (the app shows them under
+#                       «Раньше»); the core keeps the newest ones and news_dates, the headings of all.
+NEWS_IN_CORE = 5
+DIGESTS = ('map_projection', 'find_hashes', 'news_dates')
+
+
+def find_hash(find):
+    """findHash of the app: the reader's mark «this find is read» is this hash of its text."""
+    return text_hash(find['title'] + find['lead'] + find['text'] + (find.get('weak') or ''))
+
+
+def site_files(site, parts=None):
+    """{file name: text} of the browser data: the core data.js and one data-<part>.js per part."""
+    parts = PARTS if parts is None else parts
+    moved = {key for keys in parts.values() for key in keys}
+    site = dict(site)
+    if 'changelog_older' in moved:
+        news = site.get('changelog', [])
+        site['news_dates'] = [entry['date'] for entry in news]
+        site['changelog'], site['changelog_older'] = news[:NEWS_IN_CORE], news[NEWS_IN_CORE:]
+    if 'map_base' in moved:
+        site['map_projection'] = (site.get('map_base') or {}).get('projection')
+    if 'finds' in moved:
+        # Finds in several languages ({lang: [...]}) are marked by the texts in the site's own language.
+        finds = site.get('finds', [])
+        if isinstance(finds, dict):
+            finds = finds.get((site.get('site') or {}).get('lang') or 'en') or next(iter(finds.values()), [])
+        site['find_hashes'] = {find['id']: find_hash(find) for find in finds}
+    files, index = {}, {}
+    for name, keys in parts.items():
+        text = dump_js({k: site[k] for k in keys}, 'window.FAMILY_DATA_' + name)
+        files[f'data-{name}.js'] = text
+        index[name] = dict(file=f'data-{name}.js', v=hashlib.sha256(text.encode()).hexdigest()[:12], keys=list(keys))
+    core = {k: v for k, v in site.items() if k not in moved}
+    if index:
+        core['parts'] = index
+    return {'data.js': dump_js(core), **files}
+
+
+def write_site(site, folder=ROOT / 'app'):
+    """Write the browser data into app/ and remove the part files that are parts no more; returns the file names."""
+    files = site_files(site)
+    for name, text in files.items():
+        (folder / name).write_text(text, encoding='utf-8')
+    for stale in folder.glob('data-*.js'):
+        if stale.name not in files:
+            stale.unlink()
+    return sorted(files)
+
+
+def read_site(folder=ROOT / 'app'):
+    """The whole site data back from a folder, as payload() gave it: the core with every part merged in and
+    the core's digests of the parts dropped; and {file name: text}."""
+    texts = {'data.js': (folder / 'data.js').read_text(encoding='utf-8')}
+    site = load_js(texts['data.js'])
+    for part in site.pop('parts', {}).values():
+        texts[part['file']] = (folder / part['file']).read_text(encoding='utf-8')
+        site.update(load_js(texts[part['file']]))
+    if 'changelog_older' in site:
+        site['changelog'] = site['changelog'] + site.pop('changelog_older')
+    for key in DIGESTS:
+        site.pop(key, None)
+    return site, texts
+
+
 def payload(data=None, today=None):
     # The site's view of the canon; the canon itself (build.py's copy) stays untouched.
     data = copy.deepcopy(data or load_canon())
@@ -461,10 +668,14 @@ def payload(data=None, today=None):
             text = texts[base][1] if len(texts) == 1 else {lang: t[1] for lang, t in texts.items()}
             stories[path.stem] = dict(text=text, written=meta.get('written', ''), checked=meta.get('checked', ''))
     by_lang = languages(ROOT / 'data/site-questions.md', read_questions) or {base: read_questions()}
+    states = request_states()
     for lang, qs in by_lang.items():
-        problems += [p if lang == base else f'[{lang}] {p}' for p in question_problems(data, qs, kids)]
+        problems += [p if lang == base else f'[{lang}] {p}' for p in question_problems(data, qs, kids) + request_problems(data, qs, kids, states)]
         qs.pop('bad', None)
+        qs['requests'] = [dict(r, state=states[r['id']][0], date=states[r['id']][1]) for r in qs['requests'] if states.get(r['id'], ('',))[0]]
     questions = by_lang[base] if len(by_lang) == 1 else by_lang
+    history, history_problems = read_history([b['id'] for b in site.get('branches', [])])
+    problems += history_problems
     finds_by_lang = languages(ROOT / 'data/site-finds.md', read_finds) or {base: []}
     for lang, fs in finds_by_lang.items():
         where = 'data/site-finds.md' if lang == base else f'data/site-finds.{lang}.md'
@@ -479,7 +690,7 @@ def payload(data=None, today=None):
                           for t in [e['date'], e['lead'], *(i for g in e['groups'] for i in [g['title'], *g['items']])])
     problems += story_problems(data, stories)
     problems += [p.replace('data/stories/changelog.md', 'data/changelog.md') for p in story_problems(data, {'changelog': dict(text=news_text)})]
-    problems += [p for entries in news_by_lang.values() for p in changelog_problems(entries)]
+    problems += [p for entries in news_by_lang.values() for p in changelog_problems(entries, set(people))]
     problems += living_dates_in_news(everyone, set(personal), news_text)
     cited = citations(data)
     # The fixed words outside quotes stop the build in the site's own texts; in family.json they stop it
@@ -494,9 +705,12 @@ def payload(data=None, today=None):
     own += [('merge:' + m['id'], ' '.join(str(m.get(k, '')) for k in ('name', 'note', 'years'))) for m in merges]
     own += [('question:' + q['id'], ' '.join([q['title'], q['known'], q['missing'], q['help']])) for qs in by_lang.values() for q in qs['main']]
     own += [('question:' + x['id'], x['ask']) for qs in by_lang.values() for x in qs['conflicts']]
+    own += [('request:' + r['id'], r['text']) for qs in by_lang.values() for r in qs['requests']]
+    own += [(f'history:{e["year"]}', t) for e in history for t in texts(e['text'])]
     own += [('find:' + f['id'], ' '.join([f['title'], f['where'], f['lead'], f['weak'], f['text']])) for fs in finds_by_lang.values() for f in fs]
     canon = canon_texts(data, cited)
     hits, soft, stale = word_hits(own + canon, rules)
+    problems += child_dates_in_texts(everyone, kids, own + canon)
     in_canon = lambda place: place.split(':')[0] in ('person', 'claim', 'relationship', 'conflict', 'source')
     stop_canon = rules.get('family_json') == 'stop'
     problems += [f'{place}: «{word}» — {around} (a full name instead of this word; direct speech goes in quotes; exceptions — data/site-words.json)'
@@ -524,9 +738,11 @@ def payload(data=None, today=None):
             item['views'] = [dict(v, src='../site-media/' + v['file'], mid='../site-media/' + v['mid']) for v in found['views']]
         if found.get('text'):
             item['text'] = '../site-media/' + found['text']
-        for key in ('boxes', 'cite'):
-            if entry.get(key):
-                item[key] = entry[key]
+        # Who looked at a box and when (`checked`) is bookkeeping, not for the site.
+        if entry.get('boxes'):
+            item['boxes'] = [{k: v for k, v in box.items() if k != 'checked'} for box in entry['boxes']]
+        if entry.get('cite'):
+            item['cite'] = entry['cite']
         sources.append(item)
     # Who decided stays in the database; the site says «The family's decision» with the date and the note.
     for key in ('claims', 'relationships', 'conflicts'):
@@ -546,6 +762,7 @@ def payload(data=None, today=None):
     out['questions'] = questions
     out['finds'] = finds
     out['places'] = places
+    out['history'] = history
     out['map_base'] = map_base
     out['site'] = site
     out['news_version'] = hashlib.sha256(json.dumps(changelog, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
@@ -558,6 +775,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     out = payload()
     target = ROOT / args.out
-    target.write_text('window.FAMILY_DATA = ' + json.dumps(out, ensure_ascii=False).replace('</', '<\\/') + ';\n')
-    print(f'{args.out}: {len(out["people"])} people, {len(out["sources"])} sources, '
-          f'{len(out["stories"])} stories, {target.stat().st_size / 1e3:.0f} KB')
+    names = write_site(out, target.parent)
+    print(f'{target.parent.name}/{", ".join(names)}: {len(out["people"])} people, {len(out["sources"])} sources, '
+          f'{len(out["stories"])} stories, {sum((target.parent / n).stat().st_size for n in names) / 1e3:.0f} KB')

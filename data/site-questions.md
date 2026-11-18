@@ -1,6 +1,6 @@
 # Help fill in
 
-Text before the first «## » heading does not go to the site. A main question is «## <id>: <question>» with the lines «About:» (ids, comma-separated), «Status:» (a C… or R…), «Known:», «Missing:», «How to help:». The section «## Disagreements» lists open disagreements: «- X…: what to ask». The Russian version is site-questions.ru.md.
+Text before the first «## » heading does not go to the site. A main question is «## <id>: <question>» with the lines «About:» (ids, comma-separated), «Status:» (a C… or R…), «Known:», «Missing:», «How to help:». The section «## Disagreements» lists open disagreements: «- X…: what to ask». The section «## Requests» lists letters to archives still waiting for an answer: «- <request id from requests/> [person ids]: what was asked, for the family»; the status and its date come from the journal of requests/<id>/request.md. The Russian version is site-questions.ru.md.
 
 ## matvey-father: Who was the father of Matvey Ivanovich Sokolov
 About: matvey, ivan-chart
@@ -11,3 +11,6 @@ How to help: If the family knew Matvey Ivanovich’s father or keeps his papers,
 
 ## Disagreements
 - X01: Does anyone remember whether Ivan Matveevich was born in 1897 or in 1898?
+
+## Requests
+- 2026-10-01-demo-archive-matvey-birth [matvey]: The regional archive of the demo family. We asked for the parish register of 1868 with the birth of Matvey Ivanovich Sokolov: it would name his father.

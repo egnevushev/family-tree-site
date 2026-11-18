@@ -1,0 +1,119 @@
+{
+ "note": "The background of the times for the life line of a card and the page «Time»: well-known events, shown in quiet lines, with no references to the family's documents. year — the first year, end — the last (for an event longer than a year); major: true — shown at once, the rest under «All events»; branches — only for the people of these branches (ids of data/site.json), without it — for everyone. These are not facts about the family: an event says nothing about a person, it only stands beside their years. text may be {\"en\": …, \"ru\": …}.",
+ "events": [
+  {
+   "year": 1861,
+   "text": {
+    "en": "Serfdom abolished in the Russian Empire",
+    "ru": "Отмена крепостного права"
+   },
+   "major": true
+  },
+  {
+   "year": 1891,
+   "end": 1892,
+   "text": {
+    "en": "Famine in the Volga region and central provinces",
+    "ru": "Голод в Поволжье и центральных губерниях"
+   }
+  },
+  {
+   "year": 1897,
+   "text": {
+    "en": "The first general census of the Russian Empire",
+    "ru": "Первая всеобщая перепись населения Российской империи"
+   }
+  },
+  {
+   "year": 1904,
+   "end": 1905,
+   "text": {
+    "en": "Russo-Japanese War",
+    "ru": "Русско-японская война"
+   }
+  },
+  {
+   "year": 1914,
+   "end": 1918,
+   "text": {
+    "en": "First World War",
+    "ru": "Первая мировая война"
+   },
+   "major": true
+  },
+  {
+   "year": 1917,
+   "text": {
+    "en": "Revolution",
+    "ru": "Революция"
+   },
+   "major": true
+  },
+  {
+   "year": 1918,
+   "end": 1922,
+   "text": {
+    "en": "Civil War",
+    "ru": "Гражданская война"
+   },
+   "major": true
+  },
+  {
+   "year": 1921,
+   "end": 1922,
+   "text": {
+    "en": "Famine in the Volga region",
+    "ru": "Голод в Поволжье"
+   }
+  },
+  {
+   "year": 1929,
+   "end": 1933,
+   "text": {
+    "en": "Collectivisation",
+    "ru": "Коллективизация"
+   }
+  },
+  {
+   "year": 1937,
+   "end": 1938,
+   "text": {
+    "en": "The Great Terror",
+    "ru": "Большой террор"
+   },
+   "major": true
+  },
+  {
+   "year": 1941,
+   "end": 1945,
+   "text": {
+    "en": "The Great Patriotic War",
+    "ru": "Великая Отечественная война"
+   },
+   "major": true
+  },
+  {
+   "year": 1946,
+   "end": 1947,
+   "text": {
+    "en": "Famine",
+    "ru": "Голод"
+   }
+  },
+  {
+   "year": 1961,
+   "text": {
+    "en": "Yuri Gagarin flies into space",
+    "ru": "Полёт Юрия Гагарина в космос"
+   }
+  },
+  {
+   "year": 1991,
+   "text": {
+    "en": "The Soviet Union comes to an end",
+    "ru": "Распад СССР"
+   },
+   "major": true
+  }
+ ]
+}

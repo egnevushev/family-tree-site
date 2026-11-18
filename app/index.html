@@ -14,27 +14,27 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="style.css?v=a00685e090">
+  <link rel="stylesheet" href="style.css?v=1b08d43474">
 </head>
 <body>
 <header class="bar">
   <a class="brand" href="#" id="home" aria-label="Семейное древо: к началу" title="К началу"><img class="monogram" src="icons/mark.svg" alt=""><span class="brand-text" id="brand-text">Семейное древо</span></a>
   <nav class="groups" id="groups" aria-label="Ветки семьи"></nav>
   <div class="search">
-    <input type="search" id="search" placeholder="Найти человека…" autocomplete="off" aria-label="Найти человека" aria-controls="results">
+    <input type="search" id="search" placeholder="Найти человека…" autocomplete="off" aria-label="Найти человека" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="results">
     <div id="results" role="listbox" hidden></div>
   </div>
-  <nav class="modes" id="modes" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button><button data-mode="finds" aria-pressed="false" title="Находки" aria-label="Находки"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5l1.7 4.6 4.8 1.6-4.8 1.7L10 15l-1.7-4.6-4.8-1.7 4.8-1.6zM15.5 13.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg><span class="long">Находки</span></button></nav>
+  <nav class="modes" id="modes" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button><button data-mode="finds" aria-pressed="false" title="Находки" aria-label="Находки"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5l1.7 4.6 4.8 1.6-4.8 1.7L10 15l-1.7-4.6-4.8-1.7 4.8-1.6zM15.5 13.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg><span class="long">Находки</span></button><button data-mode="time" aria-pressed="false" title="Время" aria-label="Время"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5.5h8M6 10h11.5M3.5 14.5h7"/><path d="M14 3v4M14 12.5v4" stroke-width="1.2"/></svg><span class="long">Время</span></button></nav>
   <button class="legend-toggle help-toggle" id="help-toggle" aria-controls="panel" aria-label="Помочь дополнить"><span class="long">Помочь дополнить</span><span class="short">Помочь</span></button>
   <button class="legend-toggle news-toggle" id="news-toggle" aria-controls="panel" aria-label="Что нового"><span class="long">Что нового</span><span class="short">Новое</span></button>
-  <button class="legend-toggle about-toggle" id="legend-toggle" aria-expanded="false" aria-controls="legend" aria-label="Что здесь есть и как читать линии" title="Что здесь есть и как читать линии">?</button>
   <button class="legend-toggle lang-toggle" id="lang-toggle" hidden></button>
+  <button class="legend-toggle about-toggle" id="legend-toggle" aria-expanded="false" aria-controls="legend" aria-label="Что здесь есть и как читать линии" title="Что здесь есть и как читать линии">?</button>
 </header>
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" hidden>
   <div class="intro-box">
     <button class="intro-close" id="intro-close" aria-label="Скрыть видео">×</button>
     <h2 id="intro-title">Как пользоваться сайтом</h2>
-    <p>Видео на полторы минуты. Потом его всегда можно найти под «?» вверху справа.</p>
+    <p>Видео на три минуты. Потом его всегда можно найти под «?» вверху справа.</p>
     <video id="intro-video" controls playsinline preload="none"></video>
     <div class="intro-foot"><button id="intro-hide">Скрыть</button></div>
   </div>
@@ -46,7 +46,7 @@
   </svg>
   <div class="zoom" aria-label="Масштаб">
     <div class="zoom-pair"><button id="zoom-in" aria-label="Приблизить">+</button><button id="zoom-out" aria-label="Отдалить">−</button></div>
-    <div class="zoom-row"><button id="zoom-fit" aria-label="Вписать всё древо в экран" title="Вписать древо в экран"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5"/></svg></button><button id="print-toggle" class="print-toggle" aria-label="Напечатать схему на лист A3" title="Напечатать схему"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg></button><button id="export-toggle" class="print-toggle" aria-label="Скачать древо файлом GEDCOM" title="Скачать древо файлом (GEDCOM)"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5v10M6 8.5l4 4 4-4M3.5 13v4h13v-4"/></svg></button></div>
+    <div class="zoom-row"><button id="zoom-fit" aria-label="Вписать всё древо в экран" data-tip="Вписать древо в экран"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5"/></svg></button><button id="side-toggle" class="print-toggle" aria-pressed="false"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="side-open" d="M10 4v12M12.5 10H17.5M15 7.5l2.5 2.5-2.5 2.5M7.5 10H2.5M5 7.5L2.5 10 5 12.5"/><path class="side-fold" d="M10 4v12M18 10h-5.5M14.5 7.5L12 10l2.5 2.5M2 10h5.5M5.5 7.5L8 10l-2.5 2.5"/></svg></button><button id="year-toggle" class="print-toggle" aria-pressed="false" aria-controls="year-bar" aria-label="Древо в году: кто тогда жил и сколько им было лет" data-tip="Древо в году"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 5.5V10l3 2"/></svg></button><span class="tree-menu-wrap"><button id="tree-menu" class="print-toggle" aria-haspopup="menu" aria-expanded="false" aria-controls="tree-menu-list" aria-label="Ещё: печать и файл древа" data-tip="Ещё: печать и файл"><svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true"><circle cx="4.5" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="15.5" cy="10" r="1.6"/></svg></button><span class="tree-menu" id="tree-menu-list" role="menu" hidden><button id="print-toggle" role="menuitem"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg><span>Напечатать схему (A3)</span></button><button id="fan-mine" role="menuitem" hidden><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M2.5 15A7.5 7.5 0 0 1 17.5 15M5.5 15a4.5 4.5 0 0 1 9 0M10 7.5V3M4.7 9.7 1.6 6.6M15.3 9.7l3.1-3.1"/></svg><span>Веер моих предков</span></button><button id="export-toggle" role="menuitem"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5v10M6 8.5l4 4 4-4M3.5 13v4h13v-4"/></svg><span>Скачать древо файлом (GEDCOM)</span></button></span></span></div>
   </div>
   <section id="legend" class="legend" hidden aria-label="Что здесь есть и как читать линии">
     <button class="legend-close" id="legend-close" aria-label="Закрыть">×</button>
@@ -58,13 +58,17 @@
     <div id="legend-rows"></div>
     <p class="legend-tail" id="legend-tail"></p>
   </section>
+  <div class="year-bar" id="year-bar" role="group" aria-labelledby="year-bar-title" hidden>
+    <div class="year-row"><label class="year-title" id="year-bar-title" for="year-range">Древо в году</label><input type="range" id="year-range" step="1" aria-describedby="year-say"><input type="number" id="year-input" step="1" inputmode="numeric" aria-label="Год"><button class="year-close" id="year-close" aria-label="Выключить: всё древо без года">×</button></div>
+    <p class="year-say" id="year-say" aria-live="polite"></p>
+  </div>
   <div class="focusbar" id="focusbar" hidden><span>Фокус: <strong id="focus-name"></strong> и его предки</span><button id="focus-exit">Всё древо</button></div>
   <section class="page map-page" id="map-page" aria-label="Карта мест" hidden>
     <div class="page-head"><h2>Карта мест</h2><button class="map-back" id="map-back" hidden>← Вся карта</button><button class="page-close" id="map-close" aria-label="Закрыть карту, вернуться к древу">К древу ×</button></div>
     <div class="map-body"><div class="map-wrap" id="map-wrap"><svg id="map-svg" role="img" aria-label="Карта мест семьи. Перетаскивайте, колесо или щипок — масштаб."></svg><div class="map-zoom zoom-pair"><button data-map-zoom="in" aria-label="Приблизить карту">+</button><button data-map-zoom="out" aria-label="Отдалить карту">−</button></div></div><div class="map-list" id="map-list"></div></div>
   </section>
   <section class="page docs-page" id="docs-page" aria-label="Документы" hidden>
-    <div class="page-head"><h2>Документы</h2><div class="seg" role="group" aria-label="Как листать"><button data-docs-by="place" aria-pressed="true">По месту</button><button data-docs-by="year" aria-pressed="false">По годам</button></div><button class="page-close" id="docs-close" aria-label="Закрыть документы, вернуться к древу">К древу ×</button></div>
+    <div class="page-head"><h2>Документы</h2><div class="seg" role="group" aria-label="Как листать"><button data-docs-by="place" aria-pressed="true">По месту</button><button data-docs-by="year" aria-pressed="false">По годам</button><button data-docs-by="photo" aria-pressed="false">Фото</button></div><button class="page-close" id="docs-close" aria-label="Закрыть документы, вернуться к древу">К древу ×</button></div>
     <nav class="docs-jump" id="docs-jump" aria-label="Разделы"></nav>
     <div class="docs-body" id="docs-body"></div>
   </section>
@@ -80,13 +84,27 @@
     <div class="page-head"><h2>Находки</h2><nav class="finds-filter" id="finds-filter" aria-label="Ветка семьи"></nav><button class="page-close" id="finds-close" aria-label="Закрыть находки, вернуться к древу">К древу ×</button></div>
     <div class="finds-body" id="finds-body"></div>
   </section>
+  <section class="page time-page" id="time-page" aria-label="Время" hidden>
+    <div class="page-head"><h2>Время</h2><nav class="finds-filter time-filter" id="time-filter" aria-label="Ветка семьи"></nav><button class="page-close" id="time-close" aria-label="Закрыть время, вернуться к древу">К древу ×</button></div>
+    <div class="time-tools"><label class="time-year">Год <input type="number" id="time-year" step="1" inputmode="numeric"></label><button class="time-events" id="time-events" aria-pressed="false">Все события</button><button class="time-tree" id="time-tree" aria-label="Показать на древе в этом году"><span class="long">Показать на древе</span><span class="short">На древе</span></button></div>
+    <p class="time-say" id="time-say" aria-live="polite"></p>
+    <p class="time-met" id="time-met" hidden></p>
+    <div class="time-body" id="time-body"></div>
+  </section>
+  <section class="page fan-page" id="fan-page" aria-label="Веер предков" hidden>
+    <div class="page-head"><h2>Веер предков</h2><button class="book-print" id="fan-print" aria-label="Напечатать веер (A4)" title="Напечатать веер (A4)"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V2.5h10V7M5 14.5H3.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H15M5 11.5h10v6H5z"/></svg></button><button class="page-close" id="fan-close" aria-label="Закрыть веер, вернуться к древу">К древу ×</button></div>
+    <div class="fan-body" id="fan-body">
+      <div class="fan-wrap" id="fan-wrap"><p class="fan-print-head" id="fan-print-head"></p><svg id="fan-svg" role="group" aria-label="Веер предков"><defs><pattern id="fan-hatch-2" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#f6e9d6"/><path d="M0 0V7" stroke="#e0c49c" stroke-width="2.4"/></pattern><pattern id="fan-hatch-1" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="6" height="6" fill="#f0f0eb"/><path d="M0 0V6" stroke="#d6d6ce" stroke-width="2"/></pattern></defs><g id="fan-world"></g></svg><div class="fan-zoom zoom-pair" id="fan-zoom"><button data-fan-zoom="in" aria-label="Приблизить веер" title="Приблизить">+</button><button data-fan-zoom="out" aria-label="Отдалить веер" title="Отдалить">−</button><button data-fan-zoom="fit" aria-label="Вписать веер в экран" title="Вписать веер"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5"/></svg></button></div><div class="fan-print-foot" id="fan-print-foot"></div></div>
+      <div class="fan-side" id="fan-side"></div>
+    </div>
+  </section>
   <div class="print-head" id="print-head" aria-hidden="true"></div>
   <div class="print-legend" id="print-legend" aria-hidden="true"></div>
   <button class="today-line" id="today-line" hidden></button>
   <p class="hint" id="hint">Нажмите на человека — откроется его история, двойной клик — только его предки. Нажмите на линию — документы, на которых держится связь.</p>
 </main>
 <div class="panel-resize" id="panel-resize" role="separator" aria-orientation="vertical" aria-label="Ширина карточки: потяните; двойной клик — обычная ширина" title="Потяните, чтобы сделать карточку шире или уже. Двойной клик — обычная ширина" tabindex="0"></div>
-<nav class="modes modes-foot" id="modes-foot" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button><button data-mode="finds" aria-pressed="false" title="Находки" aria-label="Находки"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5l1.7 4.6 4.8 1.6-4.8 1.7L10 15l-1.7-4.6-4.8-1.7 4.8-1.6zM15.5 13.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg><span class="long">Находки</span></button></nav>
+<nav class="modes modes-foot" id="modes-foot" aria-label="Режим"><button data-mode="tree" aria-pressed="true" title="Древо" aria-label="Древо"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3.5h6v3.5H7zM3 13h5v3.5H3zM12 13h5v3.5h-5zM10 7v3M5.5 13v-3h9v3"/></svg><span class="long">Древо</span></button><button data-mode="map" aria-pressed="false" title="Карта" aria-label="Карта"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 17.5s-5-4.6-5-8.5a5 5 0 0 1 10 0c0 3.9-5 8.5-5 8.5z"/><circle cx="10" cy="9" r="1.8"/></svg><span class="long">Карта</span></button><button data-mode="docs" aria-pressed="false" title="Документы" aria-label="Документы"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5.5 2.5h6l3 3v12h-9zM11.5 2.5v3h3M8 10h5M8 13h5"/></svg><span class="long">Документы</span></button><button data-mode="finds" aria-pressed="false" title="Находки" aria-label="Находки"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 2.5l1.7 4.6 4.8 1.6-4.8 1.7L10 15l-1.7-4.6-4.8-1.7 4.8-1.6zM15.5 13.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg><span class="long">Находки</span></button><button data-mode="time" aria-pressed="false" title="Время" aria-label="Время"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5.5h8M6 10h11.5M3.5 14.5h7"/><path d="M14 3v4M14 12.5v4" stroke-width="1.2"/></svg><span class="long">Время</span></button></nav>
 <aside id="panel" aria-label="Карточка" tabindex="-1" data-state="closed">
   <div class="panel-top">
     <button class="grip" id="grip" aria-label="Развернуть или свернуть карточку"><span></span></button>
@@ -94,6 +112,8 @@
   </div>
   <div id="panel-body"></div>
 </aside>
+<p class="sr-only" id="panel-say" aria-live="polite"></p>
+<div class="load-fail" id="load-fail" role="alert" hidden><div class="load-fail-box"><p>Не удалось загрузить данные сайта. Проверьте связь и обновите страницу.</p><button id="load-retry">Обновить</button></div></div>
 <div id="viewer" role="dialog" aria-modal="true" aria-label="Документ" hidden>
   <div class="viewer-bar">
     <div class="viewer-title"><strong id="viewer-title"></strong><small id="viewer-sub"></small></div>
@@ -104,6 +124,25 @@
   <button class="viewer-doc next" id="viewer-doc-next" aria-label="Следующий документ" hidden><svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4l6 6-6 6"/></svg></button>
   <div class="viewer-foot" id="viewer-foot"></div>
 </div>
-<script src="vendor/dagre.min.js?v=2cde82baf0"></script><script src="data.js?v=e35ac5df6c"></script><script src="app.js?v=556c8eaa85"></script>
+<script src="vendor/dagre.min.js?v=2cde82baf0"></script><script src="data.js?v=7a0d975aee"></script>
+<script src="core.js?v=38da73294c"></script>
+<script src="lang.js?v=597a78c938"></script>
+<script src="family.js?v=e48be183f4"></script>
+<script src="layout.js?v=1162c4c158"></script>
+<script src="facts.js?v=93fd7f02ef"></script>
+<script src="gedcom.js?v=ea96fb4d51"></script>
+<script src="ancestors.js?v=85dc93f89a"></script>
+<script src="ui.js?v=036c7bbc44"></script>
+<script src="panzoom.js?v=5378868ac0"></script>
+<script src="tree.js?v=3ca90e2ba1"></script>
+<script src="panel.js?v=33e9f40827"></script>
+<script src="map.js?v=39b2c2d794"></script>
+<script src="docs.js?v=ab32d2706e"></script>
+<script src="book.js?v=d2e8d4612f"></script>
+<script src="days.js?v=8201b89b30"></script>
+<script src="finds.js?v=419157449f"></script>
+<script src="time.js?v=a1f5994c2a"></script>
+<script src="fan.js?v=2e35d601f4"></script>
+<script src="app.js?v=94bfffda9c"></script>
 </body>
 </html>

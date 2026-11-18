@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check data/family.json and write app/data.js, the site's view of it.
+"""Check data/family.json and write app/data.js (with its parts, app/data-<part>.js), the site's view of it.
 
     python3 scripts/build.py
 
@@ -53,16 +53,22 @@ site = payload(data)
 missing = [s['id'] for s in site['sources'] if sources[s['id']].get('local_path') and not s.get('views') and not s.get('text')]
 if missing:
     print(f'Warning: {len(missing)} sources have no copy for the site ({", ".join(missing[:8])}); run scripts/build_media.py')
-(ROOT / 'app/data.js').write_text('window.FAMILY_DATA = ' + json.dumps(site, ensure_ascii=False).replace('</', '<\\/') + ';\n')
+from site_data import write_site
+names = write_site(site, ROOT / 'app')
 # Every file the page loads carries a mark of its content (?v=…), so a browser never takes a cached old script
-# with a new page after an update (GitHub Pages lets browsers keep files for ten minutes).
+# with a new page after an update (GitHub Pages lets browsers keep files for ten minutes). The parts of the data
+# loaded later carry theirs in data.js.
 import hashlib
 import re
 index = ROOT / 'app/index.html'
 html = index.read_text()
-for name in ('style.css', 'vendor/dagre.min.js', 'data.js', 'app.js'):
-    mark = hashlib.sha256((ROOT / 'app' / name).read_bytes()).hexdigest()[:10]
-    html = re.sub(r'((?:src|href)="' + re.escape(name) + r')(\?v=[0-9a-f]*)?"', lambda m: f'{m[1]}?v={mark}"', html)
+def mark(m):
+    name = m[2]
+    path = ROOT / 'app' / name
+    if not path.is_file():
+        sys.exit(f'app/index.html: {name} is not in app/')
+    return f'{m[1]}{name}?v={hashlib.sha256(path.read_bytes()).hexdigest()[:10]}"'
+html = re.sub(r'((?:src|href)=")((?!https?:|//|#|data:)[^"?]+\.(?:js|css))(?:\?v=[0-9a-f]*)?"', mark, html)
 index.write_text(html)
-print(f"app/data.js: {len(people)} people, {len(data['claims'])} facts, {len(data['relationships'])} links, "
+print(f"app/{', '.join(names)}: {len(people)} people, {len(data['claims'])} facts, {len(data['relationships'])} links, "
       f"{len(site['sources'])} cited sources, {len(site['stories'])} stories")
